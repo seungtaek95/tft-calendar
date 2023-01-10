@@ -1,0 +1,2 @@
+rootProject.name = 'tft-calendar'
+include 'tft-calendar-core'
