@@ -9,4 +9,6 @@ public interface MatchFetcher {
 	List<String> fetchMatchIdsByPuuid(String puuid, MatchCriteria matchCriteria);
 
 	MatchDto fetchMatchById(String matchId);
+
+	int fetchAndSaveMatchRaws(String puuid, long coolTimeMillis) throws InterruptedException;
 }

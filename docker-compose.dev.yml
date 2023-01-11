@@ -1,12 +1,12 @@
 version: "3.9"
 services:
-  database:
+  mysql:
     image: mysql:8
     command: --default-authentication-plugin=mysql_native_password
     ports:
       - "3306:3306"
     volumes:
-      - ./data/data:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
       - ./data/conf:/etc/mysql/conf.d
       - ./data/init:/docker-entrypoint-initdb.d
     environment:
@@ -15,3 +15,13 @@ services:
       MYSQL_USER: seungtaek
       MYSQL_PASSWORD: seungtaek
     restart: always
+  mongodb:
+    image: mongo:5
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: seungtaek
+      MONGO_INITDB_ROOT_PASSWORD: seungtaek
+      MONGO_INITDB_DATABASE: tft_calendar
