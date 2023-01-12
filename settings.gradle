@@ -1,2 +1,4 @@
 rootProject.name = 'tft-calendar'
 include 'tft-calendar-core'
+include 'tft-calendar-web'
+

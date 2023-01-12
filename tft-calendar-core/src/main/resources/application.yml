@@ -7,6 +7,8 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGODB_USER:seungtaek}:${MONGODB_PASSWORD:seungtaek}@${MONGODB_URL:localhost:27017/tft_calendar?authSource=admin}
+#  main:
+#    web-application-type: none
 server:
   error:
     include-stacktrace: never
