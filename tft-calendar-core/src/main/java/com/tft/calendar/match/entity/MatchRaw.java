@@ -1,13 +1,16 @@
 package com.tft.calendar.match.entity;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Map;
+import java.util.Optional;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "tftMatchRaw")
+@Document(collection = "matchRaw")
 @Getter
 @RequiredArgsConstructor
 public class MatchRaw {
@@ -21,5 +24,22 @@ public class MatchRaw {
 	public record ParticipantRaw(
 		int placement,
 		int playtimeInSeconds) {
+	}
+
+	public Optional<ParticipantRaw> getParticipantRawByPuuid(String puuid) {
+		return Optional.of(participantRawByPuuid.get(puuid));
+	}
+
+	public int getYear() {
+		return Instant.ofEpochMilli(gameDatetimeInMillis).atZone(ZoneId.of("Asia/Seoul")).getYear();
+	}
+
+	public int getMonth() {
+		return Instant.ofEpochMilli(gameDatetimeInMillis).atZone(ZoneId.of("Asia/Seoul")).getMonthValue();
+	}
+
+
+	public int getDayOfMonth() {
+		return Instant.ofEpochMilli(gameDatetimeInMillis).atZone(ZoneId.of("Asia/Seoul")).getDayOfMonth();
 	}
 }
