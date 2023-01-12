@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@Disabled // 초기 개발시 API 테스트용.
+//@Disabled // 초기 개발시 API 테스트용.
 @SpringBootTest
 public class MatchFetcherTest {
 	@Autowired

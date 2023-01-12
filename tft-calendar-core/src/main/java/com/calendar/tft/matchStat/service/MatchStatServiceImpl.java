@@ -1,13 +1,10 @@
 package com.calendar.tft.matchStat.service;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.calendar.tft.matchStat.entity.DailyMatchStat;
 import com.calendar.tft.matchStat.entity.MonthlyMatchStat;
-import com.calendar.tft.matchStat.repository.MonthlyStatRepository;
+import com.calendar.tft.matchStat.repository.MonthlyMatchStatRepository;
 import com.calendar.tft.match.entity.MatchRaw;
 import com.calendar.tft.match.repository.MatchRawRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MatchStatServiceImpl implements MatchStatService {
 	private final MatchRawRepository matchRawRepository;
-	private final MonthlyStatRepository monthlyStatRepository;
+	private final MonthlyMatchStatRepository monthlyMatchStatRepository;
 
 	@Override
 	public void calculateStatistics(String puuid) {
@@ -52,7 +49,7 @@ public class MatchStatServiceImpl implements MatchStatService {
 					monthlyMatchStat.addDailyStat(DailyMatchStat.from(puuid, dayOfMonth, dailyMatchRawsByDayOfMonth.get(dayOfMonth)));
 				}
 
-				monthlyStatRepository.save(monthlyMatchStat);
+				monthlyMatchStatRepository.save(monthlyMatchStat);
 			}
 		}
 	}

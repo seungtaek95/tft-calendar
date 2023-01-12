@@ -6,7 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.calendar.tft.match.entity.MatchRaw;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class DailyMatchStat {
 	private int dayOfMonth;

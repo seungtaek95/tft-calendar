@@ -27,7 +27,7 @@ public class MatchRaw {
 	}
 
 	public Optional<ParticipantRaw> getParticipantRawByPuuid(String puuid) {
-		return Optional.of(participantRawByPuuid.get(puuid));
+		return Optional.ofNullable(participantRawByPuuid.get(puuid));
 	}
 
 	public int getYear() {
