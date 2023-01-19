@@ -15,5 +15,6 @@ public class Summoner {
 	private final String accountId;
 	private final String puuid;
 	private final String name;
-	private final String profileIconId;
+	private final long profileIconId;
+	private final int level;
 }

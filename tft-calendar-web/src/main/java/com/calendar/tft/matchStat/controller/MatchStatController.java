@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/api/match-stat")
+@RequestMapping(value = "/api/match-stats")
 @RequiredArgsConstructor
 public class MatchStatController {
 	private final MatchStatAdapter matchStatAdapter;

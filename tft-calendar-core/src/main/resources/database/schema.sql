@@ -1,13 +1,13 @@
 use tft_calendar;
 
 CREATE TABLE summoner (
-    id INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    summoner_id VARCHAR(255) NOT NULL,
     account_id VARCHAR(255) NOT NULL,
-    puuid VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    profile_icon_id VARCHAR(255),
-    PRIMARY KEY (id),
-    UNIQUE (puuid)
+    puuid VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    profile_icon_id SMALLINT UNSIGNED,
+    level SMALLINT UNSIGNED
 );
 
 CREATE TABLE tft_match (

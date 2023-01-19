@@ -22,4 +22,15 @@ public class SummonerFetcherImpl implements SummonerFetcher {
 			.log()
 			.block();
 	}
+
+	@Override
+	public SummonerDto fetchSummonerByName(String name) {
+		return webClient
+			.get()
+			.uri("/tft/summoner/v1/summoners/by-name/{name}", name)
+			.retrieve()
+			.bodyToMono(SummonerDto.class)
+			.log()
+			.block();
+	}
 }
