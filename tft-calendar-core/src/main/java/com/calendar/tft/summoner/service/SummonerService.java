@@ -1,8 +1,7 @@
 package com.calendar.tft.summoner.service;
 
-import com.calendar.tft.summoner.entity.Summoner;
+import com.calendar.tft.summoner.service.dto.SearchSummonerResult;
 
 public interface SummonerService {
-	Summoner findAndSaveIfAbsent(String summonerName);
-	Summoner fetchAndSaveByName(String name);
+	SearchSummonerResult searchByName(String name);
 }

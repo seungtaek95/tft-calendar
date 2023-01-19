@@ -2,7 +2,7 @@ package com.calendar.tft.summoner.service.dto;
 
 import com.calendar.tft.summoner.entity.Summoner;
 
-public record SummonerDto(
+public record SummonerResponse(
 	String id,
 	String accountId,
 	String puuid,
@@ -11,6 +11,6 @@ public record SummonerDto(
 	int level
 ) {
 	public Summoner toSummoner() {
-		return new Summoner(id, accountId, puuid, name, profileIconId, level);
+		return Summoner.create(id, accountId, puuid, name, profileIconId, level);
 	}
 }

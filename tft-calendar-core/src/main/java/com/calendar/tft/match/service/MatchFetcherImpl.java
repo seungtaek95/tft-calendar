@@ -1,15 +1,17 @@
 package com.calendar.tft.match.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.calendar.tft.match.service.dto.MatchCriteria;
 import com.calendar.tft.match.service.dto.MatchDto;
 import com.calendar.tft.match.entity.MatchRaw;
 import com.calendar.tft.match.repository.MatchRawRepository;
+import com.calendar.tft.summoner.entity.Summoner;
+import com.calendar.tft.summoner.repository.SummonerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,8 @@ public class MatchFetcherImpl implements MatchFetcher {
 	private final WebClient webClient;
 
 	private final MatchRawRepository matchRawRepository;
+
+	private final SummonerRepository summonerRepository;
 
 	@Override
 	public List<String> fetchMatchIdsByPuuid(String puuid, MatchCriteria matchCriteria) {
@@ -57,33 +61,39 @@ public class MatchFetcherImpl implements MatchFetcher {
 	}
 
 	@Override
-	public int fetchAndSaveMatchRaws(String puuid, long coolTimeMillis) throws InterruptedException {
-		int startIndex = 0;
+	public void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException {
+		long startTimeInSeconds = summoner.getLastFetchedAt().getEpochSecond() + 2;
 
-		while(true) {
-			AtomicInteger matchCount = new AtomicInteger();
-
-			MatchCriteria matchCriteria = new MatchCriteria(startIndex, null, null, 99);
-			List<String> matchIds = this.fetchMatchIdsByPuuid(puuid, matchCriteria);
+		while (true) {
+			// 매치 ID들 조회
+			MatchCriteria matchCriteria = new MatchCriteria(0, startTimeInSeconds, null, 99);
+			List<String> matchIds = this.fetchMatchIdsByPuuid(summoner.getPuuid(), matchCriteria);
 
 			if (matchIds.isEmpty()) {
-				return matchCount.get();
+				return;
 			}
 
-			matchIds.forEach(matchId -> {
+			MatchRaw lastMatchRaw = null;
+
+			// 매치 상세 조회
+			for (String matchId : matchIds) {
 				MatchDto matchDto = this.fetchMatchById(matchId);
 				MatchRaw matchRaw = matchDto.toMatchRaw();
 
 				matchRawRepository.save(matchRaw);
-				matchCount.addAndGet(1);
+				lastMatchRaw = matchRaw;
 
 				System.out.println(matchId + " inserted!!");
-			});
+			}
 
-			startIndex += 99;
+			// 소환사의 마지막 불러온 데이터 업데이트
+			summoner.updateLastFetched(null, Instant.ofEpochMilli(lastMatchRaw.getGameDatetimeInMillis()));
+			summonerRepository.save(summoner);
 
-			// 2분간 휴식
-			Thread.sleep(coolTimeMillis);
+			startTimeInSeconds = summoner.getLastFetchedAt().getEpochSecond();
+
+			// 100초간 휴식
+			Thread.sleep(100_000);
 		}
 	}
 }

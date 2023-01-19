@@ -1,8 +1,8 @@
 package com.calendar.tft.summoner.service;
 
-import com.calendar.tft.summoner.service.dto.SummonerDto;
+import com.calendar.tft.summoner.service.dto.SummonerResponse;
 
 public interface SummonerFetcher {
-	SummonerDto fetchSummonerByPuuid(String puuid);
-	SummonerDto fetchSummonerByName(String name);
+	SummonerResponse fetchSummonerByPuuid(String puuid);
+	SummonerResponse fetchSummonerByName(String name);
 }

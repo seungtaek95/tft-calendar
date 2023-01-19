@@ -4,11 +4,12 @@ import java.util.List;
 
 import com.calendar.tft.match.service.dto.MatchCriteria;
 import com.calendar.tft.match.service.dto.MatchDto;
+import com.calendar.tft.summoner.entity.Summoner;
 
 public interface MatchFetcher {
 	List<String> fetchMatchIdsByPuuid(String puuid, MatchCriteria matchCriteria);
 
 	MatchDto fetchMatchById(String matchId);
 
-	int fetchAndSaveMatchRaws(String puuid, long coolTimeMillis) throws InterruptedException;
+	void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException;
 }
