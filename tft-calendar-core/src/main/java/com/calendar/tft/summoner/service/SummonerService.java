@@ -1,7 +1,7 @@
 package com.calendar.tft.summoner.service;
 
-import com.calendar.tft.summoner.service.dto.SearchSummonerResult;
+import com.calendar.tft.summoner.service.adapter.dto.SummonerView;
 
 public interface SummonerService {
-	SearchSummonerResult searchByName(String name);
+	SummonerView searchByName(String name);
 }

@@ -3,7 +3,6 @@ package com.calendar.tft.summoner.controller;
 import com.calendar.tft.summoner.service.SummonerService;
 import com.calendar.tft.summoner.service.adapter.SummonerAdapter;
 import com.calendar.tft.summoner.service.adapter.dto.SummonerView;
-import com.calendar.tft.summoner.service.dto.SearchSummonerResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +24,7 @@ public class SummonerController {
 	}
 
 	@RequestMapping(value = "/{summonerName}/search", method = RequestMethod.POST)
-	public SearchSummonerResult searchSummonerByName(
+	public SummonerView searchSummonerByName(
 		@PathVariable String summonerName) {
 
 		return summonerService.searchByName(summonerName);

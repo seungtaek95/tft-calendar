@@ -23,6 +23,7 @@ public class Summoner {
 	private int level;
 	@Nullable
 	private String lastFetchedMatchId;
+	@Nullable
 	private Instant lastFetchedAt;
 
 	public static Summoner create(
@@ -41,7 +42,7 @@ public class Summoner {
 			profileIconId,
 			level,
 			null,
-			Instant.ofEpochSecond(0));
+			null);
 	}
 
 	public void updateLastFetched(String lastFetchedMatchId, Instant lastFetchedAt) {
