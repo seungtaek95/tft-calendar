@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.calendar.tft.match.entity.Match;
-import com.calendar.tft.match.entity.MatchRaw;
-import com.calendar.tft.match.enums.GameType;
+import com.calendar.tft.match.domain.entity.Match;
+import com.calendar.tft.match.domain.entity.MatchRaw;
+import com.calendar.tft.match.domain.enums.GameType;
 
 public record MatchDto(
 	MetadataDto metadata,

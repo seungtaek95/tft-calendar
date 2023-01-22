@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import com.calendar.tft.match.service.dto.MatchCriteria;
 import com.calendar.tft.match.service.dto.MatchDto;
-import com.calendar.tft.match.entity.MatchRaw;
+import com.calendar.tft.match.domain.entity.MatchRaw;
 import com.calendar.tft.match.repository.MatchRawRepository;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.calendar.tft.summoner.repository.SummonerRepository;
@@ -62,7 +62,9 @@ public class MatchFetcherImpl implements MatchFetcher {
 
 	@Override
 	public void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException {
-		long startTimeInSeconds = summoner.getLastFetchedAt().getEpochSecond() + 2;
+		long startTimeInSeconds = summoner.getLastFetchedAt() != null
+			? summoner.getLastFetchedAt().getEpochSecond() + 2
+			: 0L;
 
 		while (true) {
 			// 매치 ID들 조회

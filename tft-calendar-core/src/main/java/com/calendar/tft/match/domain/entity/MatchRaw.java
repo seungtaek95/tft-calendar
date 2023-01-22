@@ -1,4 +1,4 @@
-package com.calendar.tft.match.entity;
+package com.calendar.tft.match.domain.entity;
 
 import java.time.Instant;
 import java.time.ZoneId;

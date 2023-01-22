@@ -1,4 +1,4 @@
-package com.calendar.tft.match.enums;
+package com.calendar.tft.match.domain.enums;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ public enum GameType {
 	private final int gameTypeId;
 	private final String text;
 
-	private static Map<Integer, GameType> gameTypeById = new HashMap<>();
+	private final static Map<Integer, GameType> gameTypeById = new HashMap<>();
 
 	static {
 		for (GameType gameType : GameType.values()) {

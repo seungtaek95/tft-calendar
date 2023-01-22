@@ -3,7 +3,7 @@ package com.calendar.tft.matchStat.entity;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.calendar.tft.match.entity.MatchRaw;
+import com.calendar.tft.match.domain.entity.MatchRaw;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

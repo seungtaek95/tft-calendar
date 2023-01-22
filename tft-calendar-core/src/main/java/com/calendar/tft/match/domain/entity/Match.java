@@ -1,10 +1,10 @@
-package com.calendar.tft.match.entity;
+package com.calendar.tft.match.domain.entity;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import com.calendar.tft.match.enums.GameType;
+import com.calendar.tft.match.domain.enums.GameType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;

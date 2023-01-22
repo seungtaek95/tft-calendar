@@ -5,7 +5,7 @@ import java.util.*;
 import com.calendar.tft.matchStat.entity.DailyMatchStat;
 import com.calendar.tft.matchStat.entity.MonthlyMatchStat;
 import com.calendar.tft.matchStat.repository.MonthlyMatchStatRepository;
-import com.calendar.tft.match.entity.MatchRaw;
+import com.calendar.tft.match.domain.entity.MatchRaw;
 import com.calendar.tft.match.repository.MatchRawRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
