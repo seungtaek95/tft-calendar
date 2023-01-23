@@ -7,6 +7,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGODB_USER:seungtaek}:${MONGODB_PASSWORD:seungtaek}@${MONGODB_URL:localhost:27017/tft_calendar?authSource=admin}
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
 ---
 

@@ -25,3 +25,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: seungtaek
       MONGO_INITDB_ROOT_PASSWORD: seungtaek
       MONGO_INITDB_DATABASE: tft_calendar
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
