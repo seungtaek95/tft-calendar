@@ -1,6 +1,7 @@
 package com.calendar.tft.summoner.entity;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -48,5 +49,20 @@ public class Summoner {
 	public void updateLastFetched(String lastFetchedMatchId, Instant lastFetchedAt) {
 		this.lastFetchedMatchId = lastFetchedMatchId;
 		this.lastFetchedAt = lastFetchedAt;
+	}
+
+	/**
+	 * 최근 갱신 여부
+	 * - 마지막 갱신으로부터 10분 이내
+	 */
+	public boolean isRecentlyRenewed() {
+		if (this.getLastFetchedAt() == null) {
+			return false;
+		}
+
+		Instant now = Instant.now();
+		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(now, this.getLastFetchedAt());
+
+		return minutesAfterLastFetchedAt < 10;
 	}
 }

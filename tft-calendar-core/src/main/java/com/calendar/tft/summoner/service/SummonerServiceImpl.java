@@ -2,6 +2,8 @@ package com.calendar.tft.summoner.service;
 
 import java.util.Optional;
 
+import com.calendar.tft.match.service.MatchRenewService;
+import com.calendar.tft.match.service.dto.MatchRenewResult;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.calendar.tft.summoner.repository.SummonerRepository;
 import com.calendar.tft.summoner.service.adapter.dto.SummonerView;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class SummonerServiceImpl implements SummonerService {
 	private final SummonerRepository summonerRepository;
 	private final SummonerFetcher summonerFetcher;
+	private final MatchRenewService matchRenewService;
 
 	@Override
 	public SummonerView searchByName(String name) {
@@ -27,6 +30,16 @@ public class SummonerServiceImpl implements SummonerService {
 		Summoner newSummoner = fetchAndSaveByName(name);
 
 		return SummonerView.from(newSummoner);
+	}
+
+	@Override
+	public MatchRenewResult renewByName(String name) {
+		Optional<Summoner> summoner = summonerRepository.findByName(name);
+		if (summoner.isEmpty()) {
+			throw new RuntimeException();
+		}
+
+		return matchRenewService.renew(summoner.get());
 	}
 
 	private Summoner fetchAndSaveByName(String name) {

@@ -29,7 +29,7 @@ public class MatchRenewServiceTest {
 	void renew() {
 		// given
 		Summoner summoner = SummonerFixture.create();
-		given(matchRenewRepository.isPuuidExist(summoner.getPuuid())).willReturn(false);
+		given(matchRenewRepository.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(false);
 
 		// when
 		MatchRenewResult result = matchRenewService.renew(summoner);
@@ -44,7 +44,7 @@ public class MatchRenewServiceTest {
 	void renewAlreadyProcessing() {
 		// given
 		Summoner summoner = SummonerFixture.create();
-		given(matchRenewRepository.isPuuidExist(summoner.getPuuid())).willReturn(true);
+		given(matchRenewRepository.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(true);
 
 		// when
 		MatchRenewResult result = matchRenewService.renew(summoner);

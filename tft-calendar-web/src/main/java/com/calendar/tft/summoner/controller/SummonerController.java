@@ -1,5 +1,7 @@
 package com.calendar.tft.summoner.controller;
 
+import com.calendar.tft.match.service.dto.MatchRenewResult;
+import com.calendar.tft.summoner.controller.dto.MatchRenewResultResponse;
 import com.calendar.tft.summoner.service.SummonerService;
 import com.calendar.tft.summoner.service.adapter.SummonerAdapter;
 import com.calendar.tft.summoner.service.adapter.dto.SummonerView;
@@ -28,5 +30,13 @@ public class SummonerController {
 		@PathVariable String summonerName) {
 
 		return summonerService.searchByName(summonerName);
+	}
+
+	@RequestMapping(value = "/{summonerName}/renew", method = RequestMethod.POST)
+	public MatchRenewResultResponse renewSummonerByName(
+		@PathVariable String summonerName) {
+
+		MatchRenewResult matchRenewResult = summonerService.renewByName(summonerName);
+		return new MatchRenewResultResponse(matchRenewResult.resultStatus());
 	}
 }
