@@ -61,7 +61,7 @@ public class Summoner {
 		}
 
 		Instant now = Instant.now();
-		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(now, this.getLastFetchedAt());
+		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(this.getLastFetchedAt(), now);
 
 		return minutesAfterLastFetchedAt < 10;
 	}
