@@ -23,6 +23,12 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			return MatchRenewResult.alreadyProcessing(summoner.getPuuid());
 		}
 
+		// 현재 작업중 큐에 있으면 return
+		boolean isPuuidInProcessingQueue = matchRenewRepository.isPuuidInProcessingQueue(summoner.getPuuid());
+		if (isPuuidInProcessingQueue) {
+			return MatchRenewResult.alreadyProcessing(summoner.getPuuid());
+		}
+
 		matchRenewRepository.addToWaitingQueue(summoner.getPuuid());
 
 		return MatchRenewResult.started(summoner.getPuuid());

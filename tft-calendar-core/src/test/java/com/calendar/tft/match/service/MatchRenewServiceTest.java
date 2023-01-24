@@ -1,11 +1,10 @@
-package com.calendar.tft.matchRenew.service;
+package com.calendar.tft.match.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import com.calendar.tft.match.domain.enums.MatchRenewResultStatus;
 import com.calendar.tft.match.repository.MatchRenewRepository;
-import com.calendar.tft.match.service.MatchRenewServiceImpl;
 import com.calendar.tft.match.service.dto.MatchRenewResult;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.calendar.tft.summoner.entity.SummonerFixture;
@@ -40,11 +39,27 @@ public class MatchRenewServiceTest {
 	}
 
 	@Test
-	@DisplayName("갱신중인 소환사 갱신 시도")
-	void renewAlreadyProcessing() {
+	@DisplayName("갱신 대기 중인 소환사 갱신 시도")
+	void renewWaiting() {
 		// given
 		Summoner summoner = SummonerFixture.create();
 		given(matchRenewRepository.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(true);
+
+		// when
+		MatchRenewResult result = matchRenewService.renew(summoner);
+
+		// then
+		assertThat(result.puuid()).isEqualTo(summoner.getPuuid());
+		assertThat(result.resultStatus()).isEqualTo(MatchRenewResultStatus.ALREADY_PROCESSING);
+	}
+
+
+	@Test
+	@DisplayName("갱신 중인 소환사 갱신 시도")
+	void renewProcessing() {
+		// given
+		Summoner summoner = SummonerFixture.create();
+		given(matchRenewRepository.isPuuidInProcessingQueue(summoner.getPuuid())).willReturn(true);
 
 		// when
 		MatchRenewResult result = matchRenewService.renew(summoner);
