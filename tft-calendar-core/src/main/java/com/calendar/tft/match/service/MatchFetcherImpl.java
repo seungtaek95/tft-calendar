@@ -1,21 +1,16 @@
 package com.calendar.tft.match.service;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import com.calendar.tft.match.service.dto.MatchCriteria;
 import com.calendar.tft.match.service.dto.MatchDto;
-import com.calendar.tft.match.domain.entity.MatchRaw;
-import com.calendar.tft.match.repository.MatchRawRepository;
-import com.calendar.tft.summoner.entity.Summoner;
-import com.calendar.tft.summoner.repository.SummonerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -23,15 +18,11 @@ public class MatchFetcherImpl implements MatchFetcher {
 	@Qualifier("AsiaApiClient")
 	private final WebClient webClient;
 
-	private final MatchRawRepository matchRawRepository;
-
-	private final SummonerRepository summonerRepository;
-
 	@Override
-	public List<String> fetchMatchIdsByPuuid(String puuid, MatchCriteria matchCriteria) {
+	public Mono<List<String>> fetchMatchIdsByPuuid(String puuid, MatchCriteria matchCriteria) {
 		Objects.requireNonNull(matchCriteria);
 
-		String[] result = webClient
+		return webClient
 			.get()
 			.uri(uriBuilder -> uriBuilder
 				.path("/tft/match/v1/matches/by-puuid/{puuid}/ids")
@@ -42,60 +33,15 @@ public class MatchFetcherImpl implements MatchFetcher {
 				.build(puuid)
 			)
 			.retrieve()
-			.bodyToMono(String[].class)
-			.log()
-			.block();
-
-		return result == null ? Collections.unmodifiableList(new ArrayList<>()) : List.of(result);
+			.bodyToMono(new ParameterizedTypeReference<>() {});
 	}
 
 	@Override
-	public MatchDto fetchMatchById(String matchId) {
+	public Mono<MatchDto> fetchMatchById(String matchId) {
 		return webClient
 			.get()
 			.uri("/tft/match/v1/matches/{matchId}", matchId)
 			.retrieve()
-			.bodyToMono(MatchDto.class)
-			.log()
-			.block();
-	}
-
-	@Override
-	public void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException {
-		long startTimeInSeconds = summoner.getLastFetchedAt() != null
-			? summoner.getLastFetchedAt().getEpochSecond() + 2
-			: 0L;
-
-		while (true) {
-			// 매치 ID들 조회
-			MatchCriteria matchCriteria = new MatchCriteria(0, startTimeInSeconds, null, 99);
-			List<String> matchIds = this.fetchMatchIdsByPuuid(summoner.getPuuid(), matchCriteria);
-
-			if (matchIds.isEmpty()) {
-				return;
-			}
-
-			MatchRaw lastMatchRaw = null;
-
-			// 매치 상세 조회
-			for (String matchId : matchIds) {
-				MatchDto matchDto = this.fetchMatchById(matchId);
-				MatchRaw matchRaw = matchDto.toMatchRaw();
-
-				matchRawRepository.save(matchRaw);
-				lastMatchRaw = matchRaw;
-
-				System.out.println(matchId + " inserted!!");
-			}
-
-			// 소환사의 마지막 불러온 데이터 업데이트
-			summoner.updateLastFetched(null, Instant.ofEpochMilli(lastMatchRaw.getGameDatetimeInMillis()));
-			summonerRepository.save(summoner);
-
-			startTimeInSeconds = summoner.getLastFetchedAt().getEpochSecond();
-
-			// 100초간 휴식
-			Thread.sleep(100_000);
-		}
+			.bodyToMono(MatchDto.class);
 	}
 }

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import com.calendar.tft.match.domain.enums.MatchRenewResultStatus;
-import com.calendar.tft.match.repository.MatchRenewRepository;
 import com.calendar.tft.match.service.dto.MatchRenewResult;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.calendar.tft.summoner.entity.SummonerFixture;
@@ -18,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class MatchRenewServiceTest {
 	@Mock
-	private MatchRenewRepository matchRenewRepository;
+	private MatchRenewQueue matchRenewQueue;
 
 	@InjectMocks
 	private MatchRenewServiceImpl matchRenewService;
@@ -28,14 +27,14 @@ public class MatchRenewServiceTest {
 	void renew() {
 		// given
 		Summoner summoner = SummonerFixture.create();
-		given(matchRenewRepository.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(false);
+		given(matchRenewQueue.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(false);
 
 		// when
-		MatchRenewResult result = matchRenewService.renew(summoner);
+		MatchRenewResult result = matchRenewService.tryRenew(summoner);
 
 		// then
 		assertThat(result.puuid()).isEqualTo(summoner.getPuuid());
-		assertThat(result.resultStatus()).isEqualTo(MatchRenewResultStatus.STARTED);
+		assertThat(result.resultStatus()).isEqualTo(MatchRenewResultStatus.QUEUED);
 	}
 
 	@Test
@@ -43,10 +42,10 @@ public class MatchRenewServiceTest {
 	void renewWaiting() {
 		// given
 		Summoner summoner = SummonerFixture.create();
-		given(matchRenewRepository.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(true);
+		given(matchRenewQueue.isPuuidInWaitingQueue(summoner.getPuuid())).willReturn(true);
 
 		// when
-		MatchRenewResult result = matchRenewService.renew(summoner);
+		MatchRenewResult result = matchRenewService.tryRenew(summoner);
 
 		// then
 		assertThat(result.puuid()).isEqualTo(summoner.getPuuid());
@@ -59,10 +58,10 @@ public class MatchRenewServiceTest {
 	void renewProcessing() {
 		// given
 		Summoner summoner = SummonerFixture.create();
-		given(matchRenewRepository.isPuuidInProcessingQueue(summoner.getPuuid())).willReturn(true);
+		given(matchRenewQueue.isPuuidInProcessingQueue(summoner.getPuuid())).willReturn(true);
 
 		// when
-		MatchRenewResult result = matchRenewService.renew(summoner);
+		MatchRenewResult result = matchRenewService.tryRenew(summoner);
 
 		// then
 		assertThat(result.puuid()).isEqualTo(summoner.getPuuid());

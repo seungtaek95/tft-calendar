@@ -46,9 +46,12 @@ public class Summoner {
 			null);
 	}
 
-	public void updateLastFetched(String lastFetchedMatchId, Instant lastFetchedAt) {
-		this.lastFetchedMatchId = lastFetchedMatchId;
+	public void updateLastFetchedAt(Instant lastFetchedAt) {
 		this.lastFetchedAt = lastFetchedAt;
+	}
+
+	public void updateLastFetchedMatchId(String lastFetchedMatchId) {
+		this.lastFetchedMatchId = lastFetchedMatchId;
 	}
 
 	/**

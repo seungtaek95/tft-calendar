@@ -16,7 +16,7 @@ public class SummonerTest {
 		Instant now = Instant.now();
 		Instant nineMinAgo = now.minus(9, ChronoUnit.MINUTES); // 9분 전
 		Summoner summoner = SummonerFixture.create();
-		summoner.updateLastFetched("lastFetchedMatchId", nineMinAgo);
+		summoner.updateLastFetchedAt(nineMinAgo);
 
 		// when
 		boolean isRecentlyRenewed = summoner.isRecentlyRenewed();
@@ -32,7 +32,7 @@ public class SummonerTest {
 		Instant now = Instant.now();
 		Instant elevenMinAgo = now.minus(11, ChronoUnit.MINUTES); // 11분 전
 		Summoner summoner = SummonerFixture.create();
-		summoner.updateLastFetched("lastFetchedMatchId", elevenMinAgo);
+		summoner.updateLastFetchedAt(elevenMinAgo);
 
 		// when
 		boolean isRecentlyRenewed = summoner.isRecentlyRenewed();

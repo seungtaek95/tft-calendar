@@ -39,7 +39,7 @@ public class SummonerServiceImpl implements SummonerService {
 			throw new RuntimeException();
 		}
 
-		return matchRenewService.renew(summoner.get());
+		return matchRenewService.tryRenew(summoner.get());
 	}
 
 	private Summoner fetchAndSaveByName(String name) {

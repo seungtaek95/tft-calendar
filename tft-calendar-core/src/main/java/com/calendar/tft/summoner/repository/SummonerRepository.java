@@ -7,4 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SummonerRepository extends CrudRepository<Summoner, Long> {
 	Optional<Summoner> findByName(String name);
+	Optional<Summoner> findByPuuid(String puuid);
 }

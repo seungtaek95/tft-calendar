@@ -6,9 +6,10 @@ public record MatchRenewResult(
 	String puuid,
 	MatchRenewResultStatus resultStatus
 ) {
-	public static MatchRenewResult started(String puuid) {
-		return new MatchRenewResult(puuid, MatchRenewResultStatus.STARTED);
+	public static MatchRenewResult queued(String puuid) {
+		return new MatchRenewResult(puuid, MatchRenewResultStatus.QUEUED);
 	}
+
 	public static MatchRenewResult alreadyProcessing(String puuid) {
 		return new MatchRenewResult(puuid, MatchRenewResultStatus.ALREADY_PROCESSING);
 	}
