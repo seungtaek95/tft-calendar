@@ -2,8 +2,12 @@ package com.calendar.tft.match.service.dto;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.calendar.tft.match.domain.entity.MatchResult;
+import com.calendar.tft.summoner.entity.Summoner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.calendar.tft.match.domain.entity.Match;
 import com.calendar.tft.match.domain.entity.MatchRaw;
@@ -41,11 +45,26 @@ public record MatchDto(
 		}
 	}
 
-	public Match toMatch() {
-		return new Match(
-			metadata.matchId,
-			GameType.of(info.gameTypeId),
-			Instant.ofEpochMilli(info.gameDatetimeInMillis));
+	public Match toMatchOf(Summoner summoner) {
+		for (ParticipantDto participant : info().participants()) {
+			if (!Objects.equals(participant.puuid(), summoner.getPuuid())) {
+				continue;
+			}
+
+			MatchResult matchResult = MatchResult.create(
+				summoner.getSummonerNo(),
+				participant.placement(),
+				(int)participant.playtimeInSeconds(),
+				Instant.ofEpochMilli(this.info().gameDatetimeInMillis()));
+
+			return new Match(
+				this.metadata().matchId(),
+				GameType.of(this.info().gameTypeId()),
+				Instant.ofEpochMilli((long)participant.playtimeInSeconds()),
+				Map.of(summoner.getSummonerNo(), matchResult));
+		}
+
+		throw new RuntimeException();
 	}
 
 	public MatchRaw toMatchRaw() {

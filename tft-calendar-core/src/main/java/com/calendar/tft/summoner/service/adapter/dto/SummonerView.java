@@ -14,7 +14,7 @@ public record SummonerView(
 ) {
 	public static SummonerView from(Summoner summoner) {
 		return new SummonerView(
-			summoner.getId(),
+			summoner.getSummonerNo(),
 			summoner.getPuuid(),
 			summoner.getName(),
 			summoner.getLastFetchedAt());

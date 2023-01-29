@@ -4,14 +4,16 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.calendar.tft.match.domain.entity.MatchRaw;
+import com.calendar.tft.match.domain.entity.Match;
+import com.calendar.tft.match.repository.MatchRepository;
 import com.calendar.tft.match.service.dto.MatchCriteria;
-import com.calendar.tft.match.service.dto.MatchDto;
 import com.calendar.tft.match.service.dto.MatchRenewResult;
+import com.calendar.tft.matchStat.service.MatchStatService;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.calendar.tft.summoner.repository.SummonerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 @Service
@@ -19,9 +21,11 @@ import reactor.core.publisher.Flux;
 public class MatchRenewServiceImpl implements MatchRenewService {
 	private final int RATE_LIMIT_SECONDS = 120_000; // 2분
 	private final int RATE_LIMIT_REQUESTS = 100; // 100개
+	private final MatchFetcher matchFetcher;
 	private final MatchRenewQueue matchRenewQueue;
 	private final SummonerRepository summonerRepository;
-	private final MatchFetcher matchFetcher;
+	private final MatchRepository matchRepository;
+	private final MatchStatService matchStatService;
 
 	public MatchRenewResult tryRenew(Summoner summoner) {
 		// 최근에 갱신했다면 return
@@ -57,14 +61,19 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 	}
 
 	@Override
+	@Transactional
 	public void renew(Summoner summoner) {
-//		this.fetchAndSaveMatchRaws(summoner);
-		// 매치 조회 및 저장
-		// 매치 통계 업데이트
-		// 소환사의 마지막 갱신 시간 업데이트
+		try {
+			// 매치 조회 및 저장
+			this.fetchAndSaveMatchRaws(summoner);
+			// 매치 통계 업데이트
+			// 소환사의 마지막 갱신 시간 업데이트
+		} catch (Exception e) {
+			System.out.println("이게 뭐람");
+		}
 	}
 
-	public void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException {
+	private void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException {
 		while (true) {
 			long startTimeInSeconds = summoner.getLastFetchedAt() != null
 				? summoner.getLastFetchedAt().getEpochSecond() + 2 // 소환사의 마지막 매치 ID로 매치 정보 가져와서 시간으로 설정
@@ -83,23 +92,22 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			}
 
 			// 매치 ID로 매치 상세 조회
-			List<MatchRaw> matchRaws = Flux.fromIterable(matchIds)
+			List<Match> matches = Flux.fromIterable(matchIds)
 				.flatMap(matchFetcher::fetchMatchById)
-				.map(MatchDto::toMatchRaw)
+				.map(matchDto -> matchDto.toMatchOf(summoner))
 				.collectList()
 				.block();
 
-			if (matchRaws == null || matchRaws.isEmpty()) {
-				break;
+			if (matches == null) {
+				throw new RuntimeException();
 			}
 
-			// 매치 정보 저장
-
-			// 매치 통계 업데이트
+			// 매치 엔티티 저장
+			matchRepository.saveAll(matches);
 
 			// 소환사의 마지막 불러온 데이터 업데이트
-			MatchRaw lastMatchRaw = matchRaws.get(matchRaws.size() - 1);
-			summoner.updateLastFetchedMatchId(lastMatchRaw.getMatchId());
+			Match lastMatch = matches.get(matches.size() - 1);
+			summoner.updateLastFetchedMatchId(lastMatch.getMatchId());
 			summonerRepository.save(summoner);
 
 			// 120초간 휴식

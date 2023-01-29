@@ -15,7 +15,7 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Summoner {
 	@Id
-	private Long id;
+	private Long summonerNo;
 	private final String summonerId;
 	private final String accountId;
 	private final String puuid;
