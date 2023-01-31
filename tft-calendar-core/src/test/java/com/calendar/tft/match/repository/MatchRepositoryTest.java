@@ -42,9 +42,9 @@ public class MatchRepositoryTest {
 			10);
 		summonerRepository.saveAll(List.of(summoner1, summoner2));
 
-		MatchResult matchResult1 = MatchResult.create(summoner1.getSummonerNo(), 1, 1000, Instant.now());
-		MatchResult matchResult2 = MatchResult.create(summoner2.getSummonerNo(), 2, 2000, Instant.now());
-		Match match = new Match("matchId", GameType.RANK, Instant.ofEpochMilli(1000L), Map.of(summoner1.getSummonerNo(), matchResult1, summoner2.getSummonerNo(), matchResult2));
+		MatchResult matchResult1 = MatchResult.create("matchId1", summoner1.getSummonerNo(), 1, 1000, Instant.now());
+		MatchResult matchResult2 = MatchResult.create("matchId1", summoner2.getSummonerNo(), 2, 2000, Instant.now());
+		Match match = new Match("matchId1", GameType.RANK, Instant.ofEpochMilli(1000L), Map.of(summoner1.getSummonerNo(), matchResult1, summoner2.getSummonerNo(), matchResult2));
 
 		sut.save(match);
 

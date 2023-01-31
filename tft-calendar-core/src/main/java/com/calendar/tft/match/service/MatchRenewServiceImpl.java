@@ -65,7 +65,7 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 	public void renew(Summoner summoner) {
 		try {
 			// 매치 조회 및 저장
-			this.fetchAndSaveMatchRaws(summoner);
+			this.fetchAndSaveMatchDataOf(summoner);
 			// 매치 통계 업데이트
 			// 소환사의 마지막 갱신 시간 업데이트
 		} catch (Exception e) {
@@ -73,10 +73,11 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 		}
 	}
 
-	private void fetchAndSaveMatchRaws(Summoner summoner) throws InterruptedException {
+	private void fetchAndSaveMatchDataOf(Summoner summoner) throws InterruptedException {
 		while (true) {
-			long startTimeInSeconds = summoner.getLastFetchedAt() != null
-				? summoner.getLastFetchedAt().getEpochSecond() + 2 // 소환사의 마지막 매치 ID로 매치 정보 가져와서 시간으로 설정
+			// 소환사의 마지막 매치 ID로 매치 정보 가져와서 조회 시작 시간으로 설정
+			long startTimeInSeconds = summoner.getLastFetchedMatchPlayedAt() != null
+				? summoner.getLastFetchedMatchPlayedAt().getEpochSecond() + 2
 				: 0L;
 
 			// 매치 ID들 조회
@@ -92,6 +93,7 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			}
 
 			// 매치 ID로 매치 상세 조회
+			// TODO: DB에 매치 정보가 있다면 API 호출 대상X
 			List<Match> matches = Flux.fromIterable(matchIds)
 				.flatMap(matchFetcher::fetchMatchById)
 				.map(matchDto -> matchDto.toMatchOf(summoner))
@@ -107,7 +109,7 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 
 			// 소환사의 마지막 불러온 데이터 업데이트
 			Match lastMatch = matches.get(matches.size() - 1);
-			summoner.updateLastFetchedMatchId(lastMatch.getMatchId());
+			summoner.updateLastFetchedMatchPlayedAt(lastMatch.getPlayedAt());
 			summonerRepository.save(summoner);
 
 			// 120초간 휴식

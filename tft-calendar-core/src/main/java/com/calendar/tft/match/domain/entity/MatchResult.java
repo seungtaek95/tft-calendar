@@ -19,9 +19,13 @@ public class MatchResult {
 	private final int position;
 	private final int playtimeInSeconds;
 
-	public static MatchResult create(long summonerNo, int position, int playtimeInSeconds, Instant playedAt) {
+	public static MatchResult create(String matchId, long summonerNo, int position, int playtimeInSeconds, Instant playedAt) {
+		String matchResultNo = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Asia/Seoul")).format(playedAt)
+			+ matchId
+			+ summonerNo;
+
 		return new MatchResult(
-			DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Asia/Seoul")).format(playedAt) + summonerNo,
+			matchResultNo,
 			summonerNo,
 			position,
 			playtimeInSeconds);

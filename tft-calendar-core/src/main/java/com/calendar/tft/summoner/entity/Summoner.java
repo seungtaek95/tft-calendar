@@ -23,7 +23,7 @@ public class Summoner {
 	private long profileIconId;
 	private int level;
 	@Nullable
-	private String lastFetchedMatchId;
+	private Instant lastFetchedMatchPlayedAt;
 	@Nullable
 	private Instant lastFetchedAt;
 
@@ -50,8 +50,8 @@ public class Summoner {
 		this.lastFetchedAt = lastFetchedAt;
 	}
 
-	public void updateLastFetchedMatchId(String lastFetchedMatchId) {
-		this.lastFetchedMatchId = lastFetchedMatchId;
+	public void updateLastFetchedMatchPlayedAt(Instant lastFetchedMatchPlayedAt) {
+		this.lastFetchedMatchPlayedAt = lastFetchedMatchPlayedAt;
 	}
 
 	/**

@@ -8,7 +8,7 @@ CREATE TABLE summoner (
     name VARCHAR(255) NOT NULL,
     profile_icon_id SMALLINT UNSIGNED NOT NULL,
     level SMALLINT UNSIGNED NOT NULL,
-    last_fetched_match_id VARCHAR(255),
+    last_fetched_match_played_at TIMESTAMP,
     last_fetched_at TIMESTAMP,
     PRIMARY KEY (summoner_no),
     UNIQUE (puuid),

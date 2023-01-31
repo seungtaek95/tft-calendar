@@ -46,12 +46,13 @@ public record MatchDto(
 	}
 
 	public Match toMatchOf(Summoner summoner) {
-		for (ParticipantDto participant : info().participants()) {
+		for (ParticipantDto participant : this.info().participants()) {
 			if (!Objects.equals(participant.puuid(), summoner.getPuuid())) {
 				continue;
 			}
 
 			MatchResult matchResult = MatchResult.create(
+				this.metadata().matchId(),
 				summoner.getSummonerNo(),
 				participant.placement(),
 				(int)participant.playtimeInSeconds(),
@@ -60,7 +61,7 @@ public record MatchDto(
 			return new Match(
 				this.metadata().matchId(),
 				GameType.of(this.info().gameTypeId()),
-				Instant.ofEpochMilli((long)participant.playtimeInSeconds()),
+				Instant.ofEpochMilli(this.info().gameDatetimeInMillis()),
 				Map.of(summoner.getSummonerNo(), matchResult));
 		}
 

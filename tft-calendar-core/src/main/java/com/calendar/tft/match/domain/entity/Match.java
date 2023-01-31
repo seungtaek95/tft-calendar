@@ -24,7 +24,7 @@ public class Match {
 	private final GameType gameType;
 	private final Instant playedAt;
 	@MappedCollection(idColumn = "match_no", keyColumn = "summoner_no")
-	private final Map<Long, MatchResult> matchResults;
+	private final Map<Long, MatchResult> matchResultBySummonerNo;
 
 	@Component
 	private static class MatchBeforeConvertCallback implements BeforeConvertCallback<Match> {
