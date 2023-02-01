@@ -1,9 +1,8 @@
 package com.calendar.tft.matchStat.entity;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import com.calendar.tft.match.domain.entity.MatchRaw;
+import com.calendar.tft.match.service.dto.MatchResultOfSummoner;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,24 +15,32 @@ public class DailyMatchStat {
 	private int playedGameCount;
 	private float averagePlacement;
 
-	public static DailyMatchStat from(String puuid, int dayOfMonth, Collection<MatchRaw> dailyMatchRaws) {
-		AtomicInteger sumPlaytimeInSeconds = new AtomicInteger(0);
-		AtomicInteger sumPlayedGameCount = new AtomicInteger(0);
-		AtomicInteger sumPlacement = new AtomicInteger(0);
+	public static DailyMatchStat from(int dayOfMonth, Collection<MatchResultOfSummoner> dailyMatchResults) {
+		int sumPlaytimeInSeconds = 0;
+		int sumPlayedGameCount = 0;
+		int sumPlacement = 0;
 
-		for (MatchRaw matchRaw : dailyMatchRaws) {
-			matchRaw.getParticipantRawByPuuid(puuid)
-				.ifPresent(participantRaw -> {
-					sumPlaytimeInSeconds.getAndAdd(participantRaw.playtimeInSeconds());
-					sumPlayedGameCount.getAndAdd(1);
-					sumPlacement.getAndAdd(participantRaw.placement());
-				});
+		for (MatchResultOfSummoner matchResult : dailyMatchResults) {
+			sumPlaytimeInSeconds += matchResult.playtimeInSeconds();
+			sumPlayedGameCount += 1;
+			sumPlacement += matchResult.placement();
 		}
 
 		return new DailyMatchStat(
 			dayOfMonth,
-			sumPlaytimeInSeconds.get(),
-			sumPlayedGameCount.get(),
-			(float)sumPlacement.get() / (float)sumPlayedGameCount.get());
+			sumPlaytimeInSeconds,
+			sumPlayedGameCount,
+			(float)sumPlacement / (float)sumPlayedGameCount);
+	}
+
+	public void accumulate(DailyMatchStat dailyMatchStat) {
+		if (this.dayOfMonth != dailyMatchStat.getDayOfMonth()) {
+			throw new IllegalArgumentException("더하려는 통계의 날짜가 다릅니다");
+		}
+
+		this.averagePlacement = ((this.playedGameCount * this.averagePlacement) + (dailyMatchStat.getPlayedGameCount() * dailyMatchStat.getAveragePlacement()))
+			/ (this.playedGameCount + dailyMatchStat.getPlayedGameCount());
+		this.playtimeInSeconds += dailyMatchStat.getPlaytimeInSeconds();
+		this.playedGameCount += dailyMatchStat.getPlayedGameCount();
 	}
 }

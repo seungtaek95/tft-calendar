@@ -24,8 +24,16 @@ public class MonthlyMatchStat {
 		this.month = month;
 	}
 
-	public void addDailyStat(DailyMatchStat dailyMatchStat) {
-		dailyMatchStats.add(dailyMatchStat);
+	public void accumulateDailyStat(DailyMatchStat newDailyMatchStat) {
+		for (DailyMatchStat dailyMatchStat : this.dailyMatchStats) {
+			if (dailyMatchStat.getDayOfMonth() == newDailyMatchStat.getDayOfMonth()) {
+				dailyMatchStat.accumulate(newDailyMatchStat);
+				dailyMatchStats.sort(Comparator.comparingInt(DailyMatchStat::getDayOfMonth));
+				return;
+			}
+		}
+
+		dailyMatchStats.add(newDailyMatchStat);
 		dailyMatchStats.sort(Comparator.comparingInt(DailyMatchStat::getDayOfMonth));
 	}
 }

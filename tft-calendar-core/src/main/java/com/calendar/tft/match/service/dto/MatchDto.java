@@ -4,13 +4,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.calendar.tft.match.domain.entity.MatchResult;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.calendar.tft.match.domain.entity.Match;
-import com.calendar.tft.match.domain.entity.MatchRaw;
 import com.calendar.tft.match.domain.enums.GameType;
 
 public record MatchDto(
@@ -38,11 +36,6 @@ public record MatchDto(
 		@JsonProperty("time_eliminated")
 		float playtimeInSeconds // 플레이타임(seconds)
 	) {
-		public MatchRaw.ParticipantRaw toParticipantRaw() {
-			return new MatchRaw.ParticipantRaw(
-				placement,
-				Math.round(playtimeInSeconds));
-		}
 	}
 
 	public Match toMatchOf(Summoner summoner) {
@@ -66,13 +59,5 @@ public record MatchDto(
 		}
 
 		throw new RuntimeException();
-	}
-
-	public MatchRaw toMatchRaw() {
-		return new MatchRaw(
-			metadata.matchId,
-			info.gameDatetimeInMillis,
-			info.gameTypeId,
-			info.participants.stream().collect(Collectors.toMap(ParticipantDto::puuid, ParticipantDto::toParticipantRaw)));
 	}
 }

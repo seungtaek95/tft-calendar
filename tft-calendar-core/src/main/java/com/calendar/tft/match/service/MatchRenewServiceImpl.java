@@ -61,19 +61,20 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 	}
 
 	@Override
-	@Transactional
 	public void renew(Summoner summoner) {
 		try {
 			// 매치 조회 및 저장
 			this.fetchAndSaveMatchDataOf(summoner);
 			// 매치 통계 업데이트
+			matchStatService.renewStatisticsOf(summoner);
 			// 소환사의 마지막 갱신 시간 업데이트
 		} catch (Exception e) {
 			System.out.println("이게 뭐람");
 		}
 	}
 
-	private void fetchAndSaveMatchDataOf(Summoner summoner) throws InterruptedException {
+	@Transactional
+	void fetchAndSaveMatchDataOf(Summoner summoner) throws InterruptedException {
 		while (true) {
 			// 소환사의 마지막 매치 ID로 매치 정보 가져와서 조회 시작 시간으로 설정
 			long startTimeInSeconds = summoner.getLastFetchedMatchPlayedAt() != null
@@ -84,10 +85,9 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			MatchCriteria matchCriteria = new MatchCriteria(0, startTimeInSeconds, null, RATE_LIMIT_REQUESTS - 1);
 			List<String> matchIds = matchFetcher.fetchMatchIdsByPuuid(summoner.getPuuid(), matchCriteria).block();
 
-			summoner.updateLastFetchedAt(Instant.now());
-
-			// 새로운 매치가 없으면 종료
+			// 새로운 매치가 없으면 마지막 갱신 시간 저장 후 종료
 			if (matchIds == null || matchIds.isEmpty()) {
+				summoner.updateLastFetchedAt(Instant.now());
 				summonerRepository.save(summoner);
 				return;
 			}
@@ -95,8 +95,8 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			// 매치 ID로 매치 상세 조회
 			// TODO: DB에 매치 정보가 있다면 API 호출 대상X
 			List<Match> matches = Flux.fromIterable(matchIds)
-				.flatMap(matchFetcher::fetchMatchById)
-				.map(matchDto -> matchDto.toMatchOf(summoner))
+				.flatMap(matchFetcher::fetchMatchById) // TODO: 일부 성공 + too many request 에러 대응
+				.map(matchDto -> matchDto.toMatchOf(summoner)) // TODO: 모든 사용자의 MatchResult를 저장
 				.collectList()
 				.block();
 
@@ -107,10 +107,14 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			// 매치 엔티티 저장
 			matchRepository.saveAll(matches);
 
-			// 소환사의 마지막 불러온 데이터 업데이트
-			Match lastMatch = matches.get(matches.size() - 1);
-			summoner.updateLastFetchedMatchPlayedAt(lastMatch.getPlayedAt());
+			// 소환사의 마지막 갱신 시간, 플레이 일시 업데이트
+			summoner.updateLastFetchedAt(Instant.now());
+			summoner.updateLastFetchedMatchPlayedAt(matches.get(matches.size() - 1).getPlayedAt());
 			summonerRepository.save(summoner);
+
+			if (matches.size() < RATE_LIMIT_REQUESTS - 1) {
+				break;
+			}
 
 			// 120초간 휴식
 			Thread.sleep(RATE_LIMIT_SECONDS);

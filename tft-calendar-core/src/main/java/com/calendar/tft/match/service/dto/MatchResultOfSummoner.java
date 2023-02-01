@@ -5,13 +5,13 @@ import java.time.ZoneId;
 
 import com.calendar.tft.match.domain.enums.GameType;
 
-public record SummonerMatchResult(
+public record MatchResultOfSummoner(
+	long summonerNo,
+	int placement,
+	int playtimeInSeconds,
 	String matchId,
 	GameType gameType,
-	Instant playedAt,
-	long summonerNo,
-	int position,
-	int playtimeInSeconds
+	Instant playedAt
 ) {
 
 	public int year() {

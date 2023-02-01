@@ -25,6 +25,8 @@ public class Summoner {
 	@Nullable
 	private Instant lastFetchedMatchPlayedAt;
 	@Nullable
+	private Instant lastStatCalculatedAt;
+	@Nullable
 	private Instant lastFetchedAt;
 
 	public static Summoner create(
@@ -43,6 +45,7 @@ public class Summoner {
 			profileIconId,
 			level,
 			null,
+			null,
 			null);
 	}
 
@@ -52,6 +55,10 @@ public class Summoner {
 
 	public void updateLastFetchedMatchPlayedAt(Instant lastFetchedMatchPlayedAt) {
 		this.lastFetchedMatchPlayedAt = lastFetchedMatchPlayedAt;
+	}
+
+	public void updateLastStatCalculatedAt(Instant lastStatCalculatedAt) {
+		this.lastStatCalculatedAt = lastStatCalculatedAt;
 	}
 
 	/**

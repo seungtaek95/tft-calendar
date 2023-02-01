@@ -1,6 +1,7 @@
 package com.calendar.tft.matchStat.service.adapter;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 import com.calendar.tft.matchStat.entity.MonthlyMatchStat;
 import com.calendar.tft.matchStat.repository.MonthlyMatchStatRepository;
@@ -21,11 +22,9 @@ public class MatchStatAdapterImpl implements MatchStatAdapter {
 		Summoner summoner = summonerRepository.findByName(summonerName)
 			.orElseThrow();
 
-		MonthlyMatchStat monthlyMatchStat = monthlyMatchStatRepository.findByPuuidAndYearAndMonth(summoner.getPuuid(), year, month);
-		if (monthlyMatchStat == null) {
-			return new MonthlyMatchStatView(summoner.getPuuid(), summoner.getName(), year, month, new LinkedList<>());
-		}
+		Optional<MonthlyMatchStat> monthlyMatchStat = monthlyMatchStatRepository.findByPuuidAndYearAndMonth(summoner.getPuuid(), year, month);
 
-		return MonthlyMatchStatView.from(summoner, monthlyMatchStat);
+		return monthlyMatchStat.map(matchStat -> MonthlyMatchStatView.from(summoner, matchStat))
+			.orElseGet(() -> new MonthlyMatchStatView(summoner.getPuuid(), summoner.getName(), year, month, new LinkedList<>()));
 	}
 }

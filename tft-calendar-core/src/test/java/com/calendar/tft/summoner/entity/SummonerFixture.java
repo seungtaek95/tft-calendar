@@ -11,6 +11,21 @@ public class SummonerFixture {
 			1L,
 			10,
 			null,
+			null,
+			null);
+	}
+
+	public static Summoner withoutSummonerNo() {
+		return new Summoner(
+			null,
+			"summonerId",
+			"accountId",
+			"puuid",
+			"name",
+			1L,
+			10,
+			null,
+			null,
 			null);
 	}
 }
