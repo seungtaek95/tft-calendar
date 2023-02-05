@@ -18,7 +18,7 @@ public class MatchRenewServiceTest {
 
 	@Test
 	@Transactional
-	void renew() {
+	void renew() throws InterruptedException {
 		Summoner summoner = summonerRepository.findByName("쨍 이").orElseThrow();
 
 		sut.renew(summoner);

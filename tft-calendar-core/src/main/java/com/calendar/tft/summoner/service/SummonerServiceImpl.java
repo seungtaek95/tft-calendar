@@ -33,8 +33,8 @@ public class SummonerServiceImpl implements SummonerService {
 	}
 
 	@Override
-	public MatchRenewResult renewByName(String name) {
-		Optional<Summoner> summoner = summonerRepository.findByName(name);
+	public MatchRenewResult renewBySummonerNo(long summonerNo) {
+		Optional<Summoner> summoner = summonerRepository.findBySummonerNo(summonerNo);
 		if (summoner.isEmpty()) {
 			throw new RuntimeException();
 		}

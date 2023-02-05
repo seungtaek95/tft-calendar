@@ -2,6 +2,7 @@ package com.calendar.tft.summoner.entity;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,10 +24,6 @@ public class Summoner {
 	private long profileIconId;
 	private int level;
 	@Nullable
-	private Instant lastFetchedMatchPlayedAt;
-	@Nullable
-	private Instant lastStatCalculatedAt;
-	@Nullable
 	private Instant lastFetchedAt;
 
 	public static Summoner create(
@@ -44,8 +41,6 @@ public class Summoner {
 			name,
 			profileIconId,
 			level,
-			null,
-			null,
 			null);
 	}
 
@@ -53,26 +48,22 @@ public class Summoner {
 		this.lastFetchedAt = lastFetchedAt;
 	}
 
-	public void updateLastFetchedMatchPlayedAt(Instant lastFetchedMatchPlayedAt) {
-		this.lastFetchedMatchPlayedAt = lastFetchedMatchPlayedAt;
-	}
-
-	public void updateLastStatCalculatedAt(Instant lastStatCalculatedAt) {
-		this.lastStatCalculatedAt = lastStatCalculatedAt;
-	}
-
 	/**
 	 * 최근 갱신 여부
 	 * - 마지막 갱신으로부터 10분 이내
 	 */
 	public boolean isRecentlyRenewed() {
-		if (this.getLastFetchedAt() == null) {
+		if (this.getLastFetchedAt().isEmpty()) {
 			return false;
 		}
 
 		Instant now = Instant.now();
-		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(this.getLastFetchedAt(), now);
+		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(this.getLastFetchedAt().get(), now);
 
 		return minutesAfterLastFetchedAt < 10;
+	}
+
+	public Optional<Instant> getLastFetchedAt() {
+		return Optional.ofNullable(lastFetchedAt);
 	}
 }

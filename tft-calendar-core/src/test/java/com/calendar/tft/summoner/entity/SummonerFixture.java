@@ -10,8 +10,6 @@ public class SummonerFixture {
 			"name",
 			1L,
 			10,
-			null,
-			null,
 			null);
 	}
 
@@ -24,8 +22,6 @@ public class SummonerFixture {
 			"name",
 			1L,
 			10,
-			null,
-			null,
 			null);
 	}
 }

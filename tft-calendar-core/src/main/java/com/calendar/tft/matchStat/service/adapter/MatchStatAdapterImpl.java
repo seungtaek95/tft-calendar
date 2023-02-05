@@ -22,7 +22,7 @@ public class MatchStatAdapterImpl implements MatchStatAdapter {
 		Summoner summoner = summonerRepository.findByName(summonerName)
 			.orElseThrow();
 
-		Optional<MonthlyMatchStat> monthlyMatchStat = monthlyMatchStatRepository.findByPuuidAndYearAndMonth(summoner.getPuuid(), year, month);
+		Optional<MonthlyMatchStat> monthlyMatchStat = monthlyMatchStatRepository.findOneByPuuidAndYearAndMonth(summoner.getPuuid(), year, month);
 
 		return monthlyMatchStat.map(matchStat -> MonthlyMatchStatView.from(summoner, matchStat))
 			.orElseGet(() -> new MonthlyMatchStatView(summoner.getPuuid(), summoner.getName(), year, month, new LinkedList<>()));

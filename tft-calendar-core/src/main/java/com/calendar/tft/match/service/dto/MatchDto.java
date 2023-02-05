@@ -9,7 +9,6 @@ import com.calendar.tft.match.domain.entity.MatchResult;
 import com.calendar.tft.summoner.entity.Summoner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.calendar.tft.match.domain.entity.Match;
-import com.calendar.tft.match.domain.enums.GameType;
 
 public record MatchDto(
 	MetadataDto metadata,
@@ -53,7 +52,7 @@ public record MatchDto(
 
 			return new Match(
 				this.metadata().matchId(),
-				GameType.of(this.info().gameTypeId()),
+				this.info().gameTypeId(),
 				Instant.ofEpochMilli(this.info().gameDatetimeInMillis()),
 				Map.of(summoner.getSummonerNo(), matchResult));
 		}

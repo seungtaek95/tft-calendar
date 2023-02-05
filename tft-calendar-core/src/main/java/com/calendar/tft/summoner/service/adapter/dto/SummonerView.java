@@ -6,7 +6,7 @@ import com.calendar.tft.summoner.entity.Summoner;
 import org.springframework.lang.Nullable;
 
 public record SummonerView(
-	long id,
+	long summonerNo,
 	String puuid,
 	String name,
 	@Nullable
@@ -17,6 +17,6 @@ public record SummonerView(
 			summoner.getSummonerNo(),
 			summoner.getPuuid(),
 			summoner.getName(),
-			summoner.getLastFetchedAt());
+			summoner.getLastFetchedAt().orElse(null));
 	}
 }

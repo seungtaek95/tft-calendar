@@ -8,7 +8,6 @@ CREATE TABLE summoner (
     name VARCHAR(255) NOT NULL,
     profile_icon_id SMALLINT UNSIGNED NOT NULL,
     level SMALLINT UNSIGNED NOT NULL,
-    last_fetched_match_played_at TIMESTAMP,
     last_fetched_at TIMESTAMP,
     PRIMARY KEY (summoner_no),
     UNIQUE (puuid),
@@ -18,7 +17,7 @@ CREATE TABLE summoner (
 CREATE TABLE tft_match (
     match_no VARCHAR(255) NOT NULL,
     riot_match_id VARCHAR(255) NOT NULL,
-    game_type VARCHAR(255) NOT NULL,
+    game_type SMALLINT NOT NULL,
     played_at TIMESTAMP NOT NULL,
     PRIMARY KEY (match_no),
     UNIQUE (riot_match_id)

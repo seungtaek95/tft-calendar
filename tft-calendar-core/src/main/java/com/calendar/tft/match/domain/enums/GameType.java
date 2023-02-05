@@ -9,7 +9,8 @@ public enum GameType {
 	STANDARD(1090, "일반"),
 	RANK(1100, "랭크"),
 	TUTORIAL(1110, "튜토리얼"),
-	TEST(1111, "테스트");
+	FORTUNES_FAVOR(1170, "행운의 주인공"),
+	ETC(-1, "기타");
 
 	private final int gameTypeId;
 	private final String text;
@@ -28,7 +29,7 @@ public enum GameType {
 	}
 
 	public static GameType of(int gameTypeId) {
-		return gameTypeById.get(gameTypeId);
+		return gameTypeById.getOrDefault(gameTypeId, GameType.ETC);
 	}
 
 	public int getGameTypeId() {

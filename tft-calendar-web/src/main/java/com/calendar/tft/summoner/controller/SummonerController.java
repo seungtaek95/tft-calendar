@@ -32,11 +32,11 @@ public class SummonerController {
 		return summonerService.searchByName(summonerName);
 	}
 
-	@RequestMapping(value = "/{summonerName}/renew", method = RequestMethod.POST)
-	public MatchRenewResultResponse renewSummonerByName(
-		@PathVariable String summonerName) {
+	@RequestMapping(value = "/{summonerNo}/renew", method = RequestMethod.POST)
+	public MatchRenewResultResponse renewSummonerByNo(
+		@PathVariable long summonerNo) {
 
-		MatchRenewResult matchRenewResult = summonerService.renewByName(summonerName);
+		MatchRenewResult matchRenewResult = summonerService.renewBySummonerNo(summonerNo);
 		return new MatchRenewResultResponse(matchRenewResult.resultStatus());
 	}
 }

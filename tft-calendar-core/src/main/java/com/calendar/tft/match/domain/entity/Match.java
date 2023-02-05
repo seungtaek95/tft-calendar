@@ -21,7 +21,7 @@ public class Match {
 	@Id
 	private String matchNo;
 	private final String matchId;
-	private final GameType gameType;
+	private final int gameTypeId;
 	private final Instant playedAt;
 	@MappedCollection(idColumn = "match_no", keyColumn = "summoner_no")
 	private final Map<Long, MatchResult> matchResultBySummonerNo;
@@ -35,5 +35,9 @@ public class Match {
 
 			return aggregate;
 		}
+	}
+
+	public GameType getGameType() {
+		return GameType.of(this.gameTypeId);
 	}
 }
