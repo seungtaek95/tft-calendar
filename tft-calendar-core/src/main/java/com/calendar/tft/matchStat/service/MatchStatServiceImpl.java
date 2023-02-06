@@ -21,12 +21,20 @@ public class MatchStatServiceImpl implements MatchStatService {
 
 	@Override
 	public void renewStatistics(Summoner summoner) {
-		List<MonthlyMatchStat> monthlyMatchStatsToSave = new LinkedList<>();
-
 		Instant lastStatCalculatedAt = monthlyMatchStatRepository.findFirstByPuuidOrderByIdDesc(summoner.getPuuid()).map(MonthlyMatchStat::getLastUpdatedAt)
 			.orElse(Instant.ofEpochMilli(0L));
 
+		// TODO: 인덱스로 조회 최적화
 		List<MatchResultOfSummoner> matchResults = matchResultRepository.getMatchResultsBy(summoner.getSummonerNo(), lastStatCalculatedAt);
+
+		List<MonthlyMatchStat> calculatedMonthlyMatchStats = this.calculateStat(summoner, matchResults);
+
+		// 월간 매치 통계 저장
+		monthlyMatchStatRepository.saveAll(calculatedMonthlyMatchStats);
+	}
+
+	private List<MonthlyMatchStat> calculateStat(Summoner summoner, List<MatchResultOfSummoner> matchResults) {
+		List<MonthlyMatchStat> calculatedMonthlyMatchStats = new LinkedList<>();
 
 		// 연도별 MatchResult 들
 		Map<Integer, List<MatchResultOfSummoner>> matchResultsByYear = matchResults.stream().collect(Collectors.groupingBy(MatchResultOfSummoner::year, TreeMap::new, Collectors.toList()));
@@ -44,11 +52,10 @@ public class MatchStatServiceImpl implements MatchStatService {
 					monthlyMatchStat.accumulateOrAddDailyStat(DailyMatchStat.from(dayOfMonth, dailyMatchResultsByDayOfMonth.get(dayOfMonth)));
 				}
 
-				monthlyMatchStatsToSave.add(monthlyMatchStat);
+				calculatedMonthlyMatchStats.add(monthlyMatchStat);
 			}
 		}
 
-		// 월간 매치 통계 저장
-		monthlyMatchStatRepository.saveAll(monthlyMatchStatsToSave);
+		return calculatedMonthlyMatchStats;
 	}
 }

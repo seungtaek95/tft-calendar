@@ -2,6 +2,7 @@ package com.calendar.tft.summoner.entity;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.Optional;
 
 import lombok.AccessLevel;
@@ -45,7 +46,7 @@ public class Summoner {
 	}
 
 	public void updateLastFetchedAt(Instant lastFetchedAt) {
-		this.lastFetchedAt = lastFetchedAt;
+		this.lastFetchedAt = Objects.requireNonNull(lastFetchedAt);
 	}
 
 	/**

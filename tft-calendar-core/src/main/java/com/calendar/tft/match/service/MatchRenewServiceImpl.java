@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.calendar.tft.match.domain.entity.Match;
+import com.calendar.tft.match.service.dto.FetchAndSaveMatchResult;
 import com.calendar.tft.match.service.dto.MatchCriteria;
 import com.calendar.tft.match.service.dto.MatchRenewResult;
 import com.calendar.tft.matchStat.service.MatchStatService;
@@ -61,19 +61,20 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 
 		// 소환사의 마지막 매치 조회 시간을 가져와서 조회 시작 시간으로 설정
 		long startTimeInSeconds = summoner.getLastFetchedAt().map(Instant::getEpochSecond)
-			.orElseGet(() -> Instant.now().getEpochSecond());
+			.orElse(Instant.ofEpochSecond(0L).getEpochSecond());
 		long endTimeInSeconds = Instant.now().getEpochSecond();
 
 		// 매치 조회 및 저장
+		// TODO: 루프 도는 중에 fetchAndSaveMatchData() 에서 오류 발생시 처리?
 		while (true) {
 			MatchCriteria matchCriteria = new MatchCriteria(null, startTimeInSeconds, endTimeInSeconds, CONCURRENCY_LEVEL);
-			List<Match> fetchedMatches = matchFetchService.fetchAndSaveMatchData(summoner, matchCriteria);
-			if (fetchedMatches.isEmpty() || fetchedMatches.size() < CONCURRENCY_LEVEL) {
+			FetchAndSaveMatchResult result = matchFetchService.fetchAndSaveMatchData(summoner, matchCriteria);
+			if (result.targetMatchIds().size() < CONCURRENCY_LEVEL) {
 				break;
 			}
 
-			// 다음 매치부터 가져오기 위해 endTime 설정
-			endTimeInSeconds = fetchedMatches.get(fetchedMatches.size() - 1).getPlayedAt().getEpochSecond() - 1;
+			// 다음 매치부터 가져오기 위해 마지막 매치 시간으로 endTime 설정
+			endTimeInSeconds = result.oldestMatchPlayedAt().getEpochSecond();
 
 			Thread.sleep(15_000);
 		}

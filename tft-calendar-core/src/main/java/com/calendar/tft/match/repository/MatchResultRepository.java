@@ -12,7 +12,7 @@ public interface MatchResultRepository extends CrudRepository<MatchResult, Strin
 	@Query(value =
 		"""
 		SELECT
-			tm.match_id AS match_id, tm.game_type AS game_type, tm.played_at AS played_at,
+			tm.match_id AS match_id, tm.game_type_id AS game_type_id, tm.played_at AS played_at,
 			tmr.summoner_no AS summoner_no, tmr.placement AS placement, tmr.playtime_in_seconds AS playtime_in_seconds
 		FROM
 			tft_match_result tmr
