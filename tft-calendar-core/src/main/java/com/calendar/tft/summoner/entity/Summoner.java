@@ -45,6 +45,16 @@ public class Summoner {
 			null);
 	}
 
+	public void updateProfile(Summoner summoner) {
+		if (!Objects.equals(this.getPuuid(), summoner.getPuuid())) {
+			throw new RuntimeException("소환사가 정보가 다릅니다.");
+		}
+
+		this.name = summoner.getName();
+		this.profileIconId = summoner.getProfileIconId();
+		this.level = summoner.getLevel();
+	}
+
 	public void updateLastFetchedAt(Instant lastFetchedAt) {
 		this.lastFetchedAt = Objects.requireNonNull(lastFetchedAt);
 	}

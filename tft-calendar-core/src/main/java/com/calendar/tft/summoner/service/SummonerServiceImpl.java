@@ -20,16 +20,11 @@ public class SummonerServiceImpl implements SummonerService {
 
 	@Override
 	public SummonerView searchByName(String name) {
-		// 소환사정보가 DB에 있으면 바로 반환
-		Optional<Summoner> summoner = summonerRepository.findByName(name);
-		if (summoner.isPresent()) {
-			return SummonerView.from(summoner.get());
-		}
+		// 소환사정보가 DB에 있으면 바로 반환, 없다면 소환사 정보 가져와서 저장 후 반환
+		return summonerRepository.findByName(name)
+			.map(SummonerView::from)
+			.orElseGet(() -> SummonerView.from(this.fetchAndSaveByName(name)));
 
-		// 소환사 정보 가져와서 저장
-		Summoner newSummoner = fetchAndSaveByName(name);
-
-		return SummonerView.from(newSummoner);
 	}
 
 	@Override
@@ -43,11 +38,19 @@ public class SummonerServiceImpl implements SummonerService {
 	}
 
 	private Summoner fetchAndSaveByName(String name) {
+		// 소환사 정보 조회
 		SummonerResponse summonerResponse = summonerFetcher.fetchSummonerByName(name);
-		Summoner summoner = summonerResponse.toSummoner();
+		Summoner fetchedSummoner = summonerResponse.toSummoner();
 
-		summonerRepository.save(summoner);
+		// 같은 puuid로 저장된 소환사가 있으면 업데이트 후 return
+		Optional<Summoner> existSummoner = summonerRepository.findByPuuid(fetchedSummoner.getPuuid());
+		if (existSummoner.isPresent()) {
+			existSummoner.get().updateProfile(fetchedSummoner);
+			summonerRepository.save(existSummoner.get());
+			return existSummoner.get();
+		}
 
-		return summoner;
+		summonerRepository.save(fetchedSummoner);
+		return fetchedSummoner;
 	}
 }
