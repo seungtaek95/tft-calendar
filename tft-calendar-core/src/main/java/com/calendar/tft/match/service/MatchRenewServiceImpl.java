@@ -1,7 +1,6 @@
 package com.calendar.tft.match.service;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 import com.calendar.tft.match.service.dto.FetchAndSaveMatchResult;
@@ -73,8 +72,8 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 				break;
 			}
 
-			// 다음 매치부터 가져오기 위해 마지막 매치 시간으로 endTime 설정
-			endTimeInSeconds = result.oldestMatchPlayedAt().getEpochSecond();
+			// 다음 매치부터 가져오기 위해 가장 오래된 매치 플레이 일시로 endTime 설정
+			endTimeInSeconds = result.getOldestMatchPlayedAt().getEpochSecond();
 
 			Thread.sleep(15_000);
 		}

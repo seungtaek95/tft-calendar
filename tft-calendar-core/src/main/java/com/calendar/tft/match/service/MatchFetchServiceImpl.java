@@ -45,7 +45,9 @@ public class MatchFetchServiceImpl implements MatchFetchService {
 		}
 
 		// 매치 엔티티 저장
-		matchRepository.saveAll(fetchedMatches);
+		if (!fetchedMatches.isEmpty()) {
+			matchRepository.saveAll(fetchedMatches); // TODO: 중복은 ignore 하도록 batch insert
+		}
 
 		return new FetchAndSaveMatchResult(matchIds, existMatches, fetchedMatches);
 	}
