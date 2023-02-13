@@ -1,6 +1,5 @@
 package com.calendar.tft.matchStat.service;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,16 +19,11 @@ public class MatchStatServiceImpl implements MatchStatService {
 	private final MonthlyMatchStatRepository monthlyMatchStatRepository;
 
 	@Override
-	public void renewStatistics(Summoner summoner) {
-		Instant lastStatCalculatedAt = monthlyMatchStatRepository.findFirstByPuuidOrderByIdDesc(summoner.getPuuid()).map(MonthlyMatchStat::getLastUpdatedAt)
-			.orElse(Instant.ofEpochMilli(0L));
-
-		// TODO: 인덱스로 조회 최적화
-		List<MatchResultOfSummoner> matchResults = matchResultRepository.getMatchResultsBy(summoner.getSummonerNo(), lastStatCalculatedAt);
+	public void renewStatistics(Summoner summoner, List<String> matchNos) {
+		List<MatchResultOfSummoner> matchResults = matchResultRepository.findMatchResultsOfSummonerByMatchNos(summoner.getSummonerNo(), matchNos);
 
 		List<MonthlyMatchStat> calculatedMonthlyMatchStats = this.calculateStat(summoner, matchResults);
 
-		// 월간 매치 통계 저장
 		monthlyMatchStatRepository.saveAll(calculatedMonthlyMatchStats);
 	}
 

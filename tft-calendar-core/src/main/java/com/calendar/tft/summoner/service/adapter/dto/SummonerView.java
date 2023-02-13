@@ -9,6 +9,7 @@ public record SummonerView(
 	long summonerNo,
 	String puuid,
 	String name,
+	long profileIconId,
 	@Nullable
 	Instant lastFetchedAt
 ) {
@@ -17,6 +18,7 @@ public record SummonerView(
 			summoner.getSummonerNo(),
 			summoner.getPuuid(),
 			summoner.getName(),
+			summoner.getProfileIconId(),
 			summoner.getLastFetchedAt().orElse(null));
 	}
 }

@@ -63,14 +63,17 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			.orElse(Instant.ofEpochSecond(0L).getEpochSecond());
 		long endTimeInSeconds = Instant.now().getEpochSecond();
 
-		// 매치 조회 및 저장
-		// TODO: 루프 도는 중에 fetchAndSaveMatchData() 에서 오류 발생시 처리?
+		// TODO: 루프 도는 중에 조회나 통계 저장 중 오류 발생시 처리?
 		while (true) {
+			// 매치 조회 및 저장
 			MatchCriteria matchCriteria = new MatchCriteria(null, startTimeInSeconds, endTimeInSeconds, CONCURRENCY_LEVEL);
 			FetchAndSaveMatchResult result = matchFetchService.fetchAndSaveMatchData(summoner, matchCriteria);
 			if (result.targetMatchIds().size() < CONCURRENCY_LEVEL) {
 				break;
 			}
+
+			// 매치 통계 업데이트
+			matchStatService.renewStatistics(summoner, result.matchNos());
 
 			// 다음 매치부터 가져오기 위해 가장 오래된 매치 플레이 일시로 endTime 설정
 			endTimeInSeconds = result.getOldestMatchPlayedAt().getEpochSecond();
@@ -81,8 +84,5 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 		// 소환사의 마지막 매치 조회 시간 업데이트
 		summoner.updateLastFetchedAt(matchFetchedAt);
 		summonerRepository.save(summoner);
-
-		// 매치 통계 업데이트
-		matchStatService.renewStatistics(summoner);
 	}
 }

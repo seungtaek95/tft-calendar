@@ -19,10 +19,10 @@ public interface MatchResultRepository extends CrudRepository<MatchResult, Strin
 		LEFT JOIN
 			tft_match tm ON tm.match_no = tmr.match_no
 		WHERE
-			tm.played_at > :startPlayedAt
+			tm.match_no IN (:matchNos)
 		AND
 			tmr.summoner_no = :summonerNo
 		"""
 	)
-	List<MatchResultOfSummoner> getMatchResultsBy(Long summonerNo, Instant startPlayedAt);
+	List<MatchResultOfSummoner> findMatchResultsOfSummonerByMatchNos(Long summonerNo, List<String> matchNos);
 }

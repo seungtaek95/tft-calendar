@@ -4,18 +4,22 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.calendar.tft.match.domain.entity.Match;
 
 public record FetchAndSaveMatchResult(
 	List<String> targetMatchIds,
 	List<Match> existMatches,
-	List<Match> fetchedMatches
+	List<Match> fetchedMatches,
+	List<String> matchNos
 ) {
 	public FetchAndSaveMatchResult(List<String> targetMatchIds, List<Match> existMatches, List<Match> fetchedMatches) {
-		this.targetMatchIds = Objects.requireNonNull(targetMatchIds);
-		this.existMatches = Objects.requireNonNull(existMatches);
-		this.fetchedMatches = Objects.requireNonNull(fetchedMatches);
+		this(
+			Objects.requireNonNull(targetMatchIds),
+			Objects.requireNonNull(existMatches),
+			Objects.requireNonNull(fetchedMatches),
+			Stream.concat(existMatches.stream(), fetchedMatches.stream()).map(Match::getMatchNo).toList());
 
 		// 매치 정보들을 플레이 일시 내림차순으로 정렬
 		if (!existMatches.isEmpty()) {
