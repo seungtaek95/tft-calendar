@@ -11,14 +11,16 @@ public record SummonerView(
 	String name,
 	long profileIconId,
 	@Nullable
-	Instant lastFetchedAt
+	Instant lastFetchedAt,
+	boolean isRenewProcessing
 ) {
-	public static SummonerView from(Summoner summoner) {
+	public static SummonerView from(Summoner summoner, boolean isRenewProcessing) {
 		return new SummonerView(
 			summoner.getSummonerNo(),
 			summoner.getPuuid(),
 			summoner.getName(),
 			summoner.getProfileIconId(),
-			summoner.getLastFetchedAt().orElse(null));
+			summoner.getLastFetchedAt().orElse(null),
+			isRenewProcessing);
 	}
 }

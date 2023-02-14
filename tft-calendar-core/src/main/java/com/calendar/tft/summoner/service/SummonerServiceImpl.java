@@ -2,6 +2,7 @@ package com.calendar.tft.summoner.service;
 
 import java.util.Optional;
 
+import com.calendar.tft.match.service.MatchRenewQueue;
 import com.calendar.tft.match.service.MatchRenewService;
 import com.calendar.tft.match.service.dto.MatchRenewResult;
 import com.calendar.tft.summoner.entity.Summoner;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SummonerServiceImpl implements SummonerService {
 	private final SummonerRepository summonerRepository;
+	private final MatchRenewQueue matchRenewQueue;
 	private final SummonerFetcher summonerFetcher;
 	private final MatchRenewService matchRenewService;
 
@@ -22,8 +24,11 @@ public class SummonerServiceImpl implements SummonerService {
 	public SummonerView searchByName(String name) {
 		// 소환사정보가 DB에 있으면 바로 반환, 없다면 소환사 정보 가져와서 저장 후 반환
 		return summonerRepository.findByName(name)
-			.map(SummonerView::from)
-			.orElseGet(() -> SummonerView.from(this.fetchAndSaveByName(name)));
+			.map(summoner -> SummonerView.from(summoner, matchRenewQueue.isPuuidInProcessingQueue(summoner.getPuuid())))
+			.orElseGet(() -> {
+				Summoner summoner = this.fetchAndSaveByName(name);
+				return SummonerView.from(summoner, matchRenewQueue.isPuuidInProcessingQueue(summoner.getPuuid()));
+			});
 
 	}
 
