@@ -1,8 +1,8 @@
 use tft_calendar;
 
 CREATE TABLE summoner (
-    summoner_no INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    riot_summoner_id CHAR(63) NOT NULL,
+    summoner_no INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    summoner_id CHAR(63) NOT NULL,
     account_id CHAR(56) NOT NULL,
     puuid CHAR(78) NOT NULL,
     name VARCHAR(255) NOT NULL,
