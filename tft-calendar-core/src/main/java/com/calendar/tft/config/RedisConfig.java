@@ -1,5 +1,6 @@
 package com.calendar.tft.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -9,8 +10,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 public class RedisConfig {
 	@Bean
-	public LettuceConnectionFactory lettuceConnectionFactory() {
-		return new LettuceConnectionFactory();
+	public LettuceConnectionFactory lettuceConnectionFactory(
+			@Value("${spring.data.redis.host}") String host,
+			@Value("${spring.data.redis.port}") String port) {
+		return new LettuceConnectionFactory(host, Integer.parseInt(port));
 	}
 
 	@Bean
