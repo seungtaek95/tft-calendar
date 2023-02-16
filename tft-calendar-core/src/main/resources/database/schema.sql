@@ -16,18 +16,18 @@ CREATE TABLE summoner (
 
 CREATE TABLE tft_match (
     match_no VARCHAR(255) NOT NULL,
-    riot_match_id VARCHAR(255) NOT NULL,
-    game_type SMALLINT NOT NULL,
+    match_id VARCHAR(255) NOT NULL,
+    game_type_id SMALLINT NOT NULL,
     played_at TIMESTAMP NOT NULL,
     PRIMARY KEY (match_no),
-    UNIQUE (riot_match_id)
+    UNIQUE (match_id)
 );
 
 CREATE TABLE tft_match_result (
     match_result_no VARCHAR(255) NOT NULL,
     match_no VARCHAR(255) NOT NULL,
     summoner_no INT UNSIGNED NOT NULL,
-    position TINYINT UNSIGNED NOT NULL,
+    placement TINYINT UNSIGNED NOT NULL,
     playtime_in_seconds SMALLINT UNSIGNED NOT NULL,
     PRIMARY KEY (match_result_no),
     UNIQUE match_no_summoner_no (match_no, summoner_no),
