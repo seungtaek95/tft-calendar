@@ -75,8 +75,8 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			// 매치 통계 업데이트
 			matchStatService.renewStatistics(summoner, result.matchNos());
 
-			// 다음 매치부터 가져오기 위해 가장 오래된 매치 플레이 일시로 endTime 설정
-			endTimeInSeconds = result.getOldestMatchPlayedAt().getEpochSecond();
+			// 다음 매치부터 가져오기 위해 가장 오래된 매치 플레이 일시로 endTime 설정 (중복 조회 방지를 위해 10초 차이를 둠)
+			endTimeInSeconds = result.getOldestMatchPlayedAt().getEpochSecond() - 10;
 
 			Thread.sleep(15_000);
 		}
