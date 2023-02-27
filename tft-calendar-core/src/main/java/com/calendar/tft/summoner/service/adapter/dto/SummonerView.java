@@ -11,7 +11,7 @@ public record SummonerView(
 	String name,
 	long profileIconId,
 	@Nullable
-	Instant lastFetchedAt,
+	Instant lastManualRenewedAt,
 	boolean isRenewProcessing
 ) {
 	public static SummonerView from(Summoner summoner, boolean isRenewProcessing) {
@@ -20,7 +20,7 @@ public record SummonerView(
 			summoner.getPuuid(),
 			summoner.getName(),
 			summoner.getProfileIconId(),
-			summoner.getLastFetchedAt().orElse(null),
+			summoner.getSummonerTftStat().getLastManualRenewedAt().orElse(null),
 			isRenewProcessing);
 	}
 }

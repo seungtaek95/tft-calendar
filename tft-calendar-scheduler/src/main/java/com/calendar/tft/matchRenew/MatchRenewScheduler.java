@@ -25,7 +25,7 @@ public class MatchRenewScheduler {
 		matchRenewQueue.addToProcessingQueue(summoner.getPuuid());
 
 		try {
-			matchRenewService.renew(summoner);
+			matchRenewService.manualRenew(summoner);
 		} catch (Exception e) {
 			System.out.println(e);
 		} finally {

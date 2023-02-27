@@ -8,5 +8,5 @@ import com.calendar.tft.summoner.entity.Summoner;
 public interface MatchRenewService {
 	MatchRenewResult tryRenew(Summoner summoner);
 	Optional<Summoner> getOldestWaitingSummoner();
-	void renew(Summoner summoner) throws InterruptedException;
+	void manualRenew(Summoner summoner) throws InterruptedException;
 }

@@ -21,6 +21,6 @@ public class MatchRenewServiceTest {
 	void renew() throws InterruptedException {
 		Summoner summoner = summonerRepository.findByName("쨍 이").orElseThrow();
 
-		sut.renew(summoner);
+		sut.manualRenew(summoner);
 	}
 }

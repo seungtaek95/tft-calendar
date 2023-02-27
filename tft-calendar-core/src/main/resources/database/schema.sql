@@ -8,10 +8,18 @@ CREATE TABLE summoner (
     name VARCHAR(255) NOT NULL,
     profile_icon_id SMALLINT UNSIGNED NOT NULL,
     level SMALLINT UNSIGNED NOT NULL,
-    last_fetched_at TIMESTAMP,
     PRIMARY KEY (summoner_no),
     UNIQUE (puuid),
     UNIQUE (name)
+);
+
+CREATE TABLE summoner_tft_stat (
+   summoner_tft_stat_no INT UNSIGNED AUTO_INCREMENT NOT NULL,
+   summoner_no INT UNSIGNED NOT NULL,
+   last_renewed_match_id VARCHAR(255),
+   last_manual_renewed_at TIMESTAMP,
+   PRIMARY KEY (summoner_tft_stat_no),
+   FOREIGN KEY (summoner_no) REFERENCES summoner(summoner_no)
 );
 
 CREATE TABLE tft_match (

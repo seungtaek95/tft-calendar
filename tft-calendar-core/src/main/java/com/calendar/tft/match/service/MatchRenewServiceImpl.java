@@ -55,11 +55,11 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 	}
 
 	@Override
-	public void renew(Summoner summoner) throws InterruptedException {
+	public void manualRenew(Summoner summoner) throws InterruptedException {
 		Instant matchFetchedAt = Instant.now();
 
 		// 소환사의 마지막 매치 조회 시간을 가져와서 조회 시작 시간으로 설정
-		long startTimeInSeconds = summoner.getLastFetchedAt().map(Instant::getEpochSecond)
+		long startTimeInSeconds = summoner.getSummonerTftStat().getLastManualRenewedAt().map(Instant::getEpochSecond)
 			.orElse(Instant.ofEpochSecond(0L).getEpochSecond());
 		long endTimeInSeconds = Instant.now().getEpochSecond();
 
@@ -82,7 +82,7 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 		}
 
 		// 소환사의 마지막 매치 조회 시간 업데이트
-		summoner.updateLastFetchedAt(matchFetchedAt);
+		summoner.getSummonerTftStat().updateLastManualRenewedAt(matchFetchedAt);
 		summonerRepository.save(summoner);
 	}
 }

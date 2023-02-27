@@ -10,7 +10,7 @@ public class SummonerFixture {
 			"name",
 			1L,
 			10,
-			null);
+			SummonerTftStat.create());
 	}
 
 	public static Summoner withoutSummonerNo() {
@@ -22,6 +22,6 @@ public class SummonerFixture {
 			"name",
 			1L,
 			10,
-			null);
+			SummonerTftStat.create());
 	}
 }

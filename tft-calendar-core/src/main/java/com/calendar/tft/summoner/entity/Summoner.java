@@ -3,14 +3,13 @@ package com.calendar.tft.summoner.entity;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.Optional;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.lang.Nullable;
 
 @Table("summoner")
 @Getter
@@ -24,8 +23,8 @@ public class Summoner {
 	private String name;
 	private long profileIconId;
 	private int level;
-	@Nullable
-	private Instant lastFetchedAt;
+	@Column("summoner_no")
+	private SummonerTftStat summonerTftStat;
 
 	public static Summoner create(
 			String summonerId,
@@ -42,7 +41,7 @@ public class Summoner {
 			name,
 			profileIconId,
 			level,
-			null);
+			SummonerTftStat.create());
 	}
 
 	public void updateProfile(Summoner summoner) {
@@ -55,26 +54,18 @@ public class Summoner {
 		this.level = summoner.getLevel();
 	}
 
-	public void updateLastFetchedAt(Instant lastFetchedAt) {
-		this.lastFetchedAt = Objects.requireNonNull(lastFetchedAt);
-	}
-
 	/**
 	 * 최근 갱신 여부
 	 * - 마지막 갱신으로부터 10분 이내
 	 */
 	public boolean isRecentlyRenewed() {
-		if (this.getLastFetchedAt().isEmpty()) {
+		if (this.getSummonerTftStat().getLastManualRenewedAt().isEmpty()) {
 			return false;
 		}
 
 		Instant now = Instant.now();
-		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(this.getLastFetchedAt().get(), now);
+		long minutesAfterLastFetchedAt = ChronoUnit.MINUTES.between(this.getSummonerTftStat().getLastManualRenewedAt().get(), now);
 
 		return minutesAfterLastFetchedAt < 10;
-	}
-
-	public Optional<Instant> getLastFetchedAt() {
-		return Optional.ofNullable(lastFetchedAt);
 	}
 }
