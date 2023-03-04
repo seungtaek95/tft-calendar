@@ -2,7 +2,8 @@ package com.calendar.tft.matchStat.entity;
 
 import java.util.Collection;
 
-import com.calendar.tft.match.service.dto.MatchResultOfSummoner;
+import com.calendar.tft.match.domain.entity.Match;
+import com.calendar.tft.match.domain.entity.MatchResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,15 +16,20 @@ public class DailyMatchStat {
 	private int playedGameCount;
 	private float averagePlacement;
 
-	public static DailyMatchStat from(int dayOfMonth, Collection<MatchResultOfSummoner> dailyMatchResults) {
+	public static DailyMatchStat of(String puuid, int dayOfMonth, Collection<Match> dailyMatches) {
 		int sumPlaytimeInSeconds = 0;
 		int sumPlayedGameCount = 0;
 		int sumPlacement = 0;
 
-		for (MatchResultOfSummoner matchResult : dailyMatchResults) {
-			sumPlaytimeInSeconds += matchResult.playtimeInSeconds();
+		for (Match match : dailyMatches) {
+			if (dayOfMonth != match.dayOfMonth()) {
+				throw new RuntimeException();
+			}
+
+			MatchResult matchResult = match.getMatchResultByPuuid().get(puuid);
+			sumPlaytimeInSeconds += matchResult.getPlaytimeInSeconds();
 			sumPlayedGameCount += 1;
-			sumPlacement += matchResult.placement();
+			sumPlacement += matchResult.getPlacement();
 		}
 
 		return new DailyMatchStat(

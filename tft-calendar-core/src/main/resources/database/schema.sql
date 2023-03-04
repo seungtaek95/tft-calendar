@@ -34,11 +34,10 @@ CREATE TABLE tft_match (
 CREATE TABLE tft_match_result (
     match_result_no VARCHAR(255) NOT NULL,
     match_no VARCHAR(255) NOT NULL,
-    summoner_no INT UNSIGNED NOT NULL,
+    puuid CHAR(78) NOT NULL,
     placement TINYINT UNSIGNED NOT NULL,
     playtime_in_seconds SMALLINT UNSIGNED NOT NULL,
     PRIMARY KEY (match_result_no),
-    UNIQUE match_no_summoner_no (match_no, summoner_no),
     FOREIGN KEY (match_no) REFERENCES tft_match(match_no),
-    FOREIGN KEY (summoner_no) REFERENCES summoner(summoner_no)
+    UNIQUE puuid_match_no (puuid, match_no)
 );

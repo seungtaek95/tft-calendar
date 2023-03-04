@@ -1,12 +1,9 @@
 package com.calendar.tft.match.service.dto;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import com.calendar.tft.match.domain.entity.MatchResult;
-import com.calendar.tft.summoner.entity.Summoner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.calendar.tft.match.domain.entity.Match;
 
@@ -20,7 +17,7 @@ public record MatchDto(
 	) {
 	}
 
-	record InfoDto(
+	public record InfoDto(
 		@JsonProperty("game_datetime")
 		long gameDatetimeInMillis, // 게임 일시(millis)
 		@JsonProperty("queue_id")
@@ -29,34 +26,31 @@ public record MatchDto(
 	) {
 	}
 
-	record ParticipantDto(
+	public record ParticipantDto(
 		String puuid, // 사용자 고유 ID
 		int placement, // 순위
 		@JsonProperty("time_eliminated")
 		float playtimeInSeconds // 플레이타임(seconds)
 	) {
 	}
+	public Match toMatch() {
+		Match match = Match.create(
+			this.metadata().matchId(),
+			this.info().gameTypeId(),
+			Instant.ofEpochMilli(this.info().gameDatetimeInMillis()));
 
-	public Match toMatchOf(Summoner summoner) {
-		for (ParticipantDto participant : this.info().participants()) {
-			if (!Objects.equals(participant.puuid(), summoner.getPuuid())) {
-				continue;
-			}
-
-			MatchResult matchResult = MatchResult.create(
+		List<MatchResult> matchResults = this.info().participants().stream()
+			.map(participantDto -> MatchResult.create(
+				match.getMatchNo(),
 				this.metadata().matchId(),
-				summoner.getSummonerNo(),
-				participant.placement(),
-				(int)participant.playtimeInSeconds(),
-				Instant.ofEpochMilli(this.info().gameDatetimeInMillis()));
+				participantDto.puuid(),
+				participantDto.placement(),
+				(int) participantDto.playtimeInSeconds(),
+				Instant.ofEpochMilli(this.info().gameDatetimeInMillis())))
+			.toList();
 
-			return new Match(
-				this.metadata().matchId(),
-				this.info().gameTypeId(),
-				Instant.ofEpochMilli(this.info().gameDatetimeInMillis()),
-				Map.of(summoner.getSummonerNo(), matchResult));
-		}
+		match.setMatchResults(matchResults);
 
-		throw new RuntimeException();
+		return match;
 	}
 }

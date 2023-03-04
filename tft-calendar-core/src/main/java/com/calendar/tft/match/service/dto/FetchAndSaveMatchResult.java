@@ -10,24 +10,18 @@ import com.calendar.tft.match.domain.entity.Match;
 
 public record FetchAndSaveMatchResult(
 	List<String> targetMatchIds,
+	List<Match> matches,
 	List<Match> existMatches,
-	List<Match> fetchedMatches,
-	List<String> matchNos
+	List<Match> fetchedMatches
 ) {
 	public FetchAndSaveMatchResult(List<String> targetMatchIds, List<Match> existMatches, List<Match> fetchedMatches) {
+		// 매치 정보들을 플레이 일시 내림차순으로 정렬해서 필드로 설정
 		this(
 			Objects.requireNonNull(targetMatchIds),
-			Objects.requireNonNull(existMatches),
-			Objects.requireNonNull(fetchedMatches),
-			Stream.concat(existMatches.stream(), fetchedMatches.stream()).map(Match::getMatchNo).toList());
-
-		// 매치 정보들을 플레이 일시 내림차순으로 정렬
-		if (!existMatches.isEmpty()) {
-			existMatches.sort(Comparator.comparing(Match::getPlayedAt).reversed());
-		}
-		if (!fetchedMatches.isEmpty()) {
-			fetchedMatches.sort(Comparator.comparing(Match::getPlayedAt).reversed());
-		}
+			Stream.concat(existMatches.stream(), fetchedMatches.stream()).toList(),
+			Objects.requireNonNull(existMatches).stream().sorted((Comparator.comparing(Match::getPlayedAt).reversed())).toList(),
+			Objects.requireNonNull(fetchedMatches).stream().sorted((Comparator.comparing(Match::getPlayedAt).reversed())).toList()
+		);
 	}
 
 	public Instant getOldestMatchPlayedAt() {

@@ -2,7 +2,6 @@ package com.calendar.tft.match.repository;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.calendar.tft.match.domain.entity.Match;
@@ -26,6 +25,7 @@ public class CustomMatchRepositoryTest {
 	@Test
 	@Transactional
 	void foo() {
+		// given
 		Summoner summoner1 = Summoner.create(
 			"summonerId1",
 			"accountId1",
@@ -42,18 +42,21 @@ public class CustomMatchRepositoryTest {
 			10);
 		summonerRepository.saveAll(List.of(summoner1, summoner2));
 
-		MatchResult matchResult1 = MatchResult.create("matchId1", summoner1.getSummonerNo(), 1, 1000, Instant.now());
-		MatchResult matchResult2 = MatchResult.create("matchId1", summoner2.getSummonerNo(), 2, 2000, Instant.now());
-		Match match = new Match("matchId1", GameType.RANK.getGameTypeId(), Instant.ofEpochMilli(1000L), Map.of(summoner1.getSummonerNo(), matchResult1, summoner2.getSummonerNo(), matchResult2));
+		Match match1 = Match.create("matchId1", GameType.RANK.getGameTypeId(), Instant.ofEpochMilli(1000L));
+		MatchResult matchResult1 = MatchResult.create(match1.getMatchNo(), match1.getMatchId(), summoner1.getPuuid(), 1, 1000, Instant.now());
+		MatchResult matchResult2 = MatchResult.create(match1.getMatchNo(), match1.getMatchId(), summoner2.getPuuid(), 2, 2000, Instant.now());
+		match1.setMatchResults(List.of(matchResult1, matchResult2));
 
-		Iterable<Match> matches = sut.saveAllIgnoreDuplicate(List.of(match));
+		Match match2 = Match.create("matchId1", GameType.RANK.getGameTypeId(), Instant.ofEpochMilli(1000L));
+		MatchResult matchResult3 = MatchResult.create(match2.getMatchNo(), match2.getMatchId(), summoner1.getPuuid(), 1, 1000, Instant.now());
+		MatchResult matchResult4 = MatchResult.create(match2.getMatchNo(), match2.getMatchId(), summoner2.getPuuid(), 2, 2000, Instant.now());
+		match2.setMatchResults(List.of(matchResult3, matchResult4));
 
-		MatchResult matchResult11 = MatchResult.create("matchId1", summoner1.getSummonerNo(), 1, 1000, Instant.now());
-		MatchResult matchResult22 = MatchResult.create("matchId1", summoner2.getSummonerNo(), 2, 2000, Instant.now());
-		Match match11 = new Match("matchId1", GameType.RANK.getGameTypeId(), Instant.ofEpochMilli(1000L), Map.of(summoner1.getSummonerNo(), matchResult11, summoner2.getSummonerNo(), matchResult22));
+		// when
+		sut.saveAllIgnoreDuplicate(List.of(match1, match2));
 
-		Iterable<Match> matches1 = sut.saveAllIgnoreDuplicate(List.of(match11));
-
-		Optional<Match> foo = sut.findById(match.getMatchNo());
+		// then
+		Optional<Match> foo = sut.findById(match1.getMatchNo());
+		System.out.println(foo.get());
 	}
 }

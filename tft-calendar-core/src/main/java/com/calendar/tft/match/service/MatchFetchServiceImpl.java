@@ -7,6 +7,7 @@ import com.calendar.tft.match.domain.entity.Match;
 import com.calendar.tft.match.repository.MatchRepository;
 import com.calendar.tft.match.service.dto.FetchAndSaveMatchResult;
 import com.calendar.tft.match.service.dto.MatchCriteria;
+import com.calendar.tft.match.service.dto.MatchDto;
 import com.calendar.tft.summoner.entity.Summoner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class MatchFetchServiceImpl implements MatchFetchService {
 		List<Match> fetchedMatches = Flux.fromIterable(matchIds)
 			.filter(matchId -> !existMatchIds.contains(matchId))
 			.flatMap(matchFetcher::fetchMatchById) // TODO: 일부 성공 + too many request 에러 대응
-			.map(matchDto -> matchDto.toMatchOf(summoner)) // TODO: 모든 사용자의 MatchResult를 저장
+			.map(MatchDto::toMatch)
 			.collectList()
 			.block();
 
@@ -45,9 +46,7 @@ public class MatchFetchServiceImpl implements MatchFetchService {
 		}
 
 		// 매치 엔티티 저장
-		if (!fetchedMatches.isEmpty()) {
-			matchRepository.saveAllIgnoreDuplicate(fetchedMatches); // TODO: 중복은 ignore 하도록 batch insert
-		}
+		matchRepository.saveAllIgnoreDuplicate(fetchedMatches);
 
 		return new FetchAndSaveMatchResult(matchIds, existMatches, fetchedMatches);
 	}

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MatchRenewServiceImpl implements MatchRenewService {
+	private final long DEFAULT_START_TIME = 1672498800L; // 23년 1월 1일 00시 00분 (한국시간)
 	private final int CONCURRENCY_LEVEL = 10;
 	private final MatchFetchService matchFetchService;
 	private final MatchRenewQueue matchRenewQueue;
@@ -58,9 +59,9 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 	public void manualRenew(Summoner summoner) throws InterruptedException {
 		Instant matchFetchedAt = Instant.now();
 
-		// 소환사의 마지막 매치 조회 시간을 가져와서 조회 시작 시간으로 설정
+		// 소환사의 마지막 매치 조회 시간을 가져와서 조회 시작 시간으로 설정 (default: 23년 1월 1일 0시 0분)
 		long startTimeInSeconds = summoner.getSummonerTftStat().getLastManualRenewedAt().map(Instant::getEpochSecond)
-			.orElse(Instant.ofEpochSecond(0L).getEpochSecond());
+			.orElse(Instant.ofEpochSecond(DEFAULT_START_TIME).getEpochSecond());
 		long endTimeInSeconds = Instant.now().getEpochSecond();
 
 		// TODO: 루프 도는 중에 조회나 통계 저장 중 오류 발생시 처리?
@@ -73,7 +74,7 @@ public class MatchRenewServiceImpl implements MatchRenewService {
 			}
 
 			// 매치 통계 업데이트
-			matchStatService.renewStatistics(summoner, result.matchNos());
+			matchStatService.renewStatistics(summoner, result.matches());
 
 			// 다음 매치부터 가져오기 위해 가장 오래된 매치 플레이 일시로 endTime 설정 (중복 조회 방지를 위해 10초 차이를 둠)
 			endTimeInSeconds = result.getOldestMatchPlayedAt().getEpochSecond() - 10;
