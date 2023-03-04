@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-public class MatchRepositoryTest {
+public class CustomMatchRepositoryTest {
 	@Autowired
 	private SummonerRepository summonerRepository;
 
@@ -46,9 +46,14 @@ public class MatchRepositoryTest {
 		MatchResult matchResult2 = MatchResult.create("matchId1", summoner2.getSummonerNo(), 2, 2000, Instant.now());
 		Match match = new Match("matchId1", GameType.RANK.getGameTypeId(), Instant.ofEpochMilli(1000L), Map.of(summoner1.getSummonerNo(), matchResult1, summoner2.getSummonerNo(), matchResult2));
 
-		sut.save(match);
+		Iterable<Match> matches = sut.saveAllIgnoreDuplicate(List.of(match));
+
+		MatchResult matchResult11 = MatchResult.create("matchId1", summoner1.getSummonerNo(), 1, 1000, Instant.now());
+		MatchResult matchResult22 = MatchResult.create("matchId1", summoner2.getSummonerNo(), 2, 2000, Instant.now());
+		Match match11 = new Match("matchId1", GameType.RANK.getGameTypeId(), Instant.ofEpochMilli(1000L), Map.of(summoner1.getSummonerNo(), matchResult11, summoner2.getSummonerNo(), matchResult22));
+
+		Iterable<Match> matches1 = sut.saveAllIgnoreDuplicate(List.of(match11));
 
 		Optional<Match> foo = sut.findById(match.getMatchNo());
-		System.out.println(foo);
 	}
 }

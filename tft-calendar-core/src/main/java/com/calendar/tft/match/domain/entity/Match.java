@@ -30,14 +30,25 @@ public class Match {
 	private static class MatchBeforeConvertCallback implements BeforeConvertCallback<Match> {
 		@Override
 		public Match onBeforeConvert(Match aggregate) {
-			String dateString = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Asia/Seoul")).format(aggregate.playedAt);
-			aggregate.matchNo = dateString + aggregate.matchId;
+			aggregate.matchNo = aggregate.createMatchNo();
 
 			return aggregate;
 		}
 	}
 
+	public void setMatchNo() {
+		if (this.matchNo == null) {
+			this.matchNo = this.createMatchNo();
+		}
+	}
+
+	public String createMatchNo() {
+		String dateString = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Asia/Seoul")).format(this.getPlayedAt());
+		return dateString + this.getMatchId();
+	}
+
 	public GameType getGameType() {
 		return GameType.of(this.gameTypeId);
 	}
+
 }
